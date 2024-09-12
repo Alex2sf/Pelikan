@@ -1,0 +1,56 @@
+.image-container {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* Agar gambar mengambil lebar penuh */
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+}
+
+.overlay-text {
+    position: absolute;
+    top: 65%; /* Jarak dari atas kontainer */
+    left: 0; /* Jarak dari kiri */
+    transform: translateY(-50%); /* Untuk memastikan elemen berada di tengah secara vertikal */
+    color: white;
+    font-size: 3vw; /* Ukuran font responsif berdasarkan lebar viewport */
+    text-shadow: 2px 2px 4px rgb(69, 53, 193);
+    pointer-events: none;
+    padding: 2vw 4vw; /* Padding responsif */
+    background-color: rgb(69, 53, 193, 0.7); /* Warna latar belakang dengan transparansi */
+    height: auto; /* Mengatur tinggi otomatis berdasarkan konten */
+    max-height: 35vh; /* Batas maksimum tinggi sesuai 35% dari viewport height */
+    width: 50%; /* Lebar responsif (50% dari lebar kontainer) */
+
+    /* Background kotak dengan ujung kanan melancip */
+    clip-path: polygon(0 0, 80% 0, 100% 150%, 80% 100%, 0 100%);
+}
+
+.hahaha{
+    background-color:red;
+}
+
+.kkpcolor{
+    background-color: #4535C1;
+    color:white;
+}
+
+#kocak {
+    color:#4535C1;
+}
+
+/* Media Query untuk layar kecil */
+@media (max-width: 600px) {
+    .overlay-text {
+        font-size: 4vw; /* Ukuran font lebih besar di layar kecil */
+        padding: 3vw 6vw; /* Padding yang lebih besar */
+        padding-left: 10vw; /* Padding kiri yang lebih besar di layar kecil */
+        top: 50%; /* Tetap di tengah secara vertikal */
+        transform: translateY(-50%); /* Menjaga elemen tetap di tengah */
+        height: auto; /* Tinggi otomatis berdasarkan konten */
+        max-height: 35vh; /* Maksimum tinggi sesuai 35% dari viewport height */
+        width: 80%; /* Lebar yang lebih besar untuk layar kecil */
+    }
+}
