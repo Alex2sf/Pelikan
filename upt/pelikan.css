@@ -41,6 +41,48 @@
     color:#4535C1;
 }
 
+.nav-tabs .nav-link.active {
+    border-top-left-radius: 15px; /* Mengatur border-radius untuk tab aktif */
+    border-top-right-radius: 15px; /* Mengatur border-radius untuk tab aktif */
+    background-color: #4535C1;
+    color:white;
+}
+
+.nav-tabs .nav-link:hover {
+    border-top-left-radius: 15px; /* Mengatur border-radius untuk tab aktif */
+    border-top-right-radius: 15px; /* Mengatur border-radius untuk tab aktif */
+    background-color: #4535C1;
+    color:white;
+}
+/* Mengatur dropdown menu agar terbuka saat hover */
+.dropdown:hover .dropdown-menu {
+    display: block;  /* Menampilkan menu saat hover */
+    margin-top: 0;   /* Menghapus jarak dari elemen atas jika perlu */
+}
+
+/* Mengatur dropdown toggle agar tetap terlihat saat hover */
+.dropdown-menu {
+    display: none; /* Menyembunyikan menu secara default */
+    position: absolute; /* Posisi menu di atas dropdown toggle */
+    top: 100%; /* Menampilkan menu di bawah dropdown toggle */
+    left: 0; /* Menampilkan menu di sebelah kiri dropdown toggle */
+    z-index: 1000; /* Menampilkan menu di atas konten lainnya */
+}
+
+.dropdown-menu a {
+    text-decoration: none;
+    color: #000; /* Mengatur warna teks dalam menu */
+}
+
+.dropdown-menu a:hover {
+    background-color: #4535C1; /* Warna latar belakang saat hover pada item menu */
+    color:white;
+}
+
+.black{
+    color:black;
+}
+
 /* Media Query untuk layar kecil */
 @media (max-width: 600px) {
     .overlay-text {

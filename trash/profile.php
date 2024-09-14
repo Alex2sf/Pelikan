@@ -4,7 +4,6 @@ if (!isset($_SESSION['id_akun'])) {
     header("Location: login.php");
     exit();
 }
-
 $username="";
 $username1=$_SESSION["role"];
 
@@ -47,23 +46,20 @@ $organisasi = $result->fetch_assoc();
             .fixed{
                 background-attachment: fixed; /* Membuat gambar tetap saat menggulir halaman */
             }
-            
-            .form-control {
-                border: none;
-                border-bottom: 2px solid #ccc; /* Add bottom border */
-                border-radius: 0;
-                box-shadow: none;
-                background: none;
-                width: 300px; /* Mengatur panjang input menjadi 300px */
-            }
 
-            .form-control-full {
-                width: 100%; /* Panjang input menyesuaikan dengan lebar kolom */
+            table {
+                border-collapse: separate;
+                border-spacing: 0 5px; /* Mengatur jarak vertikal antar baris */
+                color: black;
             }
-
-            .form-control-wide {
-                width: 100%; /* Membuat input mengisi lebar kontainer kolom */
-                max-width: 500px; /* Menetapkan lebar maksimum agar tidak terlalu besar */
+            th, td {
+                padding: 5px 55px; /* Menambah padding di dalam sel */
+            }
+            th {
+                text-align: left;
+            }
+            td {
+                text-align: left;
             }
         </style>
     </head>
@@ -115,73 +111,53 @@ $organisasi = $result->fetch_assoc();
         </nav>
 
         <!-- Profile Section -->
-        <div class="container-fluid" style="margin-top:90px; margin-bottom: 20px;">
+        <div class="container-fluid" style="margin-top:120px; margin-bottom: 20px;">
             <div class="row">
                 <div class="col"></div>
-                <div class="col-12 col-md-8 pt-2 position-relative mx-auto" style="background-color: white; border-radius: 40px; padding-bottom:25px; opacity:0.8">
-                    <h2 class="text-center" style="color:black; padding-top:10px;">Profile Organisasi</h2>
+                <div class="col-12 col-md-8 pt-2 position-relative" style="background-color: white; border-radius: 40px; padding-bottom:25px; opacity:0.8">
+                    <h2 class="text-center"style="color:black; padding-top:10px;">Profile Organisasi</h2>
                     <button onclick="window.location.href='form_organisasi.php';" class="btn btn-primary position-absolute" style="top: 30px; right: 35px; border-radius: 20px; border: 0;">
                         <i class="fa-solid fa-pen-to-square"></i>
                     </button>
-                    <form action="" method="post" style="max-width: 600px; margin: 0 auto;">
-                        <div class="form-group row d-flex align-items-center justify-content-center pt-2">
-                            <label for="inputName2" class="col-sm-4 col-form-label text-right">Unit Eselon 1</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['unit_eselon1'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputName2" class="col-sm-4 col-form-label text-right">Nama Organisasi</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['nama_organisasi'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputemail" class="col-sm-4 col-form-label text-right">Email Organisasi</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['email_badan'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputnotelp" class="col-sm-4 col-form-label text-right">No Telepon/Fax</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['no_telp_fax'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputAlamat" class="col-sm-4 col-form-label text-right">Alamat</label>
-                            <div class="col-sm-8">
-                                : <?php echo $organisasi['alamat'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputNip" class="col-sm-4 col-form-label text-right">NIP</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['nip_responden'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputResponden" class="col-sm-4 col-form-label text-right">Nama Responden</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['nama_responden'] ?? ''; ?>
-                            </div>
-                        </div>
-                    
-                        <div class="form-group row d-flex align-items-center justify-content-center pb-3">
-                            <label for="inputJabatan" class="col-sm-4 col-form-label text-right">Jabatan</label>
-                            <div class="col-sm-8">
-                                <?php echo $organisasi['jabatan'] ?? '';?>
-                            </div>
-                        </div>
-                    </form>                    
-                </div>                  
+                    <div class="table-responsive">
+                        <table class="table-borderless">
+                            <tr>
+                                <td>Unit Eselon 1</td>
+                                <td>: <?php echo $organisasi['unit_eselon1']?></td>
+                            </tr>
+                            <tr>
+                                <td>Nama Organisasi</td>
+                                <td>: <?php echo $organisasi['nama_organisasi']?></td>
+                            </tr>
+                            <tr>
+                                <td>Email Organisasi</td>
+                                <td>: <?php echo $organisasi['email_badan']?></td>
+                            </tr>
+                            <tr>
+                                <td>Alamat</td>
+                                <td>: <?php echo $organisasi['alamat']?></td>
+                            </tr>
+                            <tr>
+                                <td>No Telepon</td>
+                                <td>: <?php echo $organisasi['no_telp_fax']?></td>
+                            </tr>
+                            <tr>
+                                <td>NIP</td>
+                                <td>: <?php echo $organisasi['nip_responden']?></td>
+                            </tr>
+                            <tr>
+                                <td>Nama Responden</td>
+                                <td>: <?php echo $organisasi['nama_responden']?></td>
+                            </tr>
+                            <tr>
+                                <td>Jabatan</td>
+                                <td>: <?php echo $organisasi['jabatan']?></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>                                  
                 <div class="col">
+                    <!-- Kolom ini kosong, bisa diisi dengan elemen lain atau dibiarkan kosong -->
                 </div>
             </div>
         </div>

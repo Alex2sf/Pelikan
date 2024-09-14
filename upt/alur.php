@@ -1,3 +1,13 @@
+<?php
+session_start();
+if (!isset($_SESSION['id_akun'])) {
+    header("Location: login.php");
+    exit();
+}
+$username="";
+$username1=$_SESSION["role"];
+?>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
@@ -6,7 +16,7 @@
         <script type="text/javascript" src="../js/bootstrap.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
-        <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
+        <link href="pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             html, body {
@@ -26,23 +36,40 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="navbar-nav ms-auto">
+                    <ul class="nav nav-tabs ms-auto">
                         <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="#">Beranda</a>
+                            <a class="nav-link black" aria-current="page" href="index.php">Beranda</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link" href="#">Kuesioner</a>
+                            <a class="nav-link black" href="peringkat.php">Peringkat</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link" href="#">Alur</a>
+                            <a class="nav-link black" href="kuesioner.php">Kuesioner</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link" href="login.html">Login</a>
+                            <a class="nav-link active" href="alur.php">Alur</a>
                         </li>
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
                     </ul>
                 </div>
             </div>
-        </nav>            
+        </nav>
 
         <!--Container Putih Informasi Organisasi-->
         <div class="container-fluid text-center" style="background-color: white; color:black; padding:40px; margin-top:100px;">
