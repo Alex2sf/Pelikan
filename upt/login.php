@@ -50,7 +50,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                user-select: none; Mencegah seleksi teks di seluruh halaman
+                user-select: none; 
                 outline: none; /* Menghilangkan outline fokus */
             }
 
