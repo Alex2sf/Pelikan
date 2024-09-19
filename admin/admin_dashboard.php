@@ -1,167 +1,134 @@
+<?php
+ob_start();
+session_start();
+$username="";
+$username1=$_SESSION["role"];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Landing Page</title>
-    <style>
-        /* Reset default styles */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
-        }
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
+        <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            body{
+                user-select: none; Mencegah seleksi teks di seluruh halaman
+                outline: none; /* Menghilangkan outline fokus */
+            }
+        </style>
+    </head>
+    <body>
+        <!--Navigasi Bar-->
+        <!--Navigasi Bar-->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
+                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                </a>
+                <div>Pelikan</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
+                    <ul class="nav nav-tabs ms-auto">
+                        <li class="nav-item px-2">
+                            <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="register.php">Daftar Akun</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                        </li>
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <div class="image-container">
+            <img src="../img/Kantor KKP.jpg" class="img-fluid" alt="...">
+            <div class="overlay-text">
+                <b>Pelikan</b>
+                <div style="font: size 10px;;">Pemantauan dan Evaluasi Layanan Informasi  Kementerian <br> Kelautan dan Perikanan</div>
+            </div>
+        </div>                
 
-        body {
-            background-color: #f4f4f4;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            background-color: #333;
-            padding: 10px 20px;
-            color: #fff;
-        }
-
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar .logo {
-            color: #fff;
-            font-size: 24px;
-            text-decoration: none;
-        }
-
-        .navbar .nav-links {
-            list-style: none;
-            display: flex;
-        }
-
-        .navbar .nav-links li {
-            margin-left: 20px;
-        }
-
-        .navbar .nav-links a {
-            color: #fff;
-            text-decoration: none;
-            font-size: 18px;
-        }
-
-        .navbar .nav-links a:hover {
-            text-decoration: underline;
-        }
-
-        /* Content styles */
-        .content {
-            padding: 40px 20px;
-            max-width: 1000px;
-            margin: auto;
-        }
-
-        .content section {
-            margin-bottom: 40px;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .content h2 {
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .content p {
-            font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 16px;
-        }
-
-        .btn:hover {
-            background-color: #555;
-        }
-
-        /* Footer styles */
-        footer {
-            background-color: #333;
-            color: #fff;
-            text-align: center;
-            padding: 10px 0;
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-        }
-    </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <div class="container">
-            <a href="#" class="logo">Admin Dashboard</a>
-            <ul class="nav-links">
-                <li><a href="register.php">Daftar Akun</a></li>
-                <li><a href="akses_penilai.php">Akses Penilai</a></li>
-                <li><a href="tambah_kuesioner.php">Kuesioner</a></li>
-                <li><a href="akses_admin.php">Akses UPT</a></li>
-
-            </ul>
+        <!--Container Putih Informasi Organisasi-->
+        <div class="container-fluid text-center" style="background-color: white; color:black; padding:40px">
+            <div class="row">
+                <div class="col" style="border-right: 5px solid #4535C1">
+                    <div class="col">
+                        <b style="font-size:50px;">120</b>
+                    </div>
+                    <div class="col">
+                        UK/UPT Teregistrasi
+                    </div>
+                </div>
+                <div class="col" style="border-right: 5px solid #4535C1">
+                    <div class="col">
+                        <b style="font-size:50px;">120</b>
+                    </div>
+                    <div class="col">
+                        UK/UPT Menjawab Kuesioner
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="col">
+                        <b style="font-size:50px;">120</b>
+                    </div>
+                    <div class="col">
+                        UK/UPT Terverifikasi
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="content">
-        <!-- Daftar Akun Section -->
-        <section id="daftar-akun">
-            <h2>Daftar Akun</h2>
-            <img src="https://via.placeholder.com/800x400" alt="Daftar Akun Image">
-            <p>Halaman ini memungkinkan admin untuk mengelola semua akun pengguna yang terdaftar dalam sistem. Anda dapat menambah, mengedit, dan menghapus akun sesuai kebutuhan.</p>
-            <a href="#" class="btn">Kelola Akun</a>
-        </section>
 
-        <!-- Akses Penilai Section -->
-        <section id="akses-penilai">
-            <h2>Akses Penilai</h2>
-            <img src="https://via.placeholder.com/800x400" alt="Akses Penilai Image">
-            <p>Di sini, Anda dapat mengatur hak akses untuk penilai dan mengelola proses verifikasi kuesioner. Fitur ini memastikan bahwa hanya pengguna yang berwenang yang dapat mengakses informasi sensitif.</p>
-            <a href="#" class="btn">Atur Akses Penilai</a>
-        </section>
+        
 
-        <!-- Kuesioner Section -->
-        <section id="kuesioner">
-            <h2>Kuesioner</h2>
-            <img src="https://via.placeholder.com/800x400" alt="Kuesioner Image">
-            <p>Halaman ini memungkinkan admin untuk melihat dan mengelola semua kuesioner yang telah diisi oleh pengguna. Anda dapat meninjau hasil kuesioner, mengedit, atau menghapus kuesioner sesuai kebutuhan.</p>
-            <a href="#" class="btn">Kelola Kuesioner</a>
-        </section>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2024 Admin Dashboard. All rights reserved.</p>
-    </footer>
-</body>
+        <!--Footer-->
+        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
+            <div class="row">
+                <div class="col">
+                </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+    </body>
 </html>
