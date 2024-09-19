@@ -83,6 +83,25 @@
     color:black;
 }
 
+.section-header {
+    background-color: #FF9900;
+    font-weight: bold;
+}
+.sub-section-header {
+    background-color: #FF9900;
+    font-weight: bold;
+}
+.center {
+    text-align: center;
+}
+.highlight {
+    background-color: #FF9900;
+}
+.sub-header {
+    background-color: yellow;
+    color: black;
+    text-align: center;
+}
 /* Media Query untuk layar kecil */
 @media (max-width: 600px) {
     .overlay-text {

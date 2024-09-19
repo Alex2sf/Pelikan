@@ -127,28 +127,28 @@ $organisasi = $result->fetch_assoc();
                         <div class="form-group row d-flex align-items-center justify-content-center pt-2">
                             <label for="inputName2" class="col-sm-4 col-form-label text-right">Unit Eselon 1</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['unit_eselon1'] ?? ''; ?>
+                                : <?php echo $organisasi['unit_eselon1'] ?? ''; ?>
                             </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputName2" class="col-sm-4 col-form-label text-right">Nama Organisasi</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['nama_organisasi'] ?? ''; ?>
+                                : <?php echo $organisasi['nama_organisasi'] ?? ''; ?>
                             </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputemail" class="col-sm-4 col-form-label text-right">Email Organisasi</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['email_badan'] ?? ''; ?>
+                                : <?php echo $organisasi['email_badan'] ?? ''; ?>
                             </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputnotelp" class="col-sm-4 col-form-label text-right">No Telepon/Fax</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['no_telp_fax'] ?? ''; ?>
+                                : <?php echo $organisasi['no_telp_fax'] ?? ''; ?>
                             </div>
                         </div>
                     
@@ -162,21 +162,21 @@ $organisasi = $result->fetch_assoc();
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputNip" class="col-sm-4 col-form-label text-right">NIP</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['nip_responden'] ?? ''; ?>
+                                : <?php echo $organisasi['nip_responden'] ?? ''; ?>
                             </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputResponden" class="col-sm-4 col-form-label text-right">Nama Responden</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['nama_responden'] ?? ''; ?>
+                                : <?php echo $organisasi['nama_responden'] ?? ''; ?>
                             </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center pb-3">
                             <label for="inputJabatan" class="col-sm-4 col-form-label text-right">Jabatan</label>
                             <div class="col-sm-8">
-                                <?php echo $organisasi['jabatan'] ?? '';?>
+                                : <?php echo $organisasi['jabatan'] ?? '';?>
                             </div>
                         </div>
                     </form>                    
@@ -185,8 +185,6 @@ $organisasi = $result->fetch_assoc();
                 </div>
             </div>
         </div>
-
-
 
         <!--Footer-->
         <div class="container-fluid text-center fixed-bottom" style="background-color: #4535C1; color:white; padding:20px; margin-top:-20px;">

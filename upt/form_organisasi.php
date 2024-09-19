@@ -118,11 +118,11 @@ $organisasi = $result->fetch_assoc();
                 <div class="col"></div>
                 <div class="col-12 col-md-8 pt-2 position-relative mx-auto" style="background-color: white; border-radius: 40px; padding-bottom:25px; opacity:0.8">
                     <h2 class="text-center" style="color:black; padding-top:10px;">Profile Organisasi</h2>
-                    <form action="" method="post" style="max-width: 600px; margin: 0 auto;">
+                    <form id="organisasiForm" action="update_organisasi.php" method="post" style="max-width: 600px; margin: 0 auto;">
                         <div class="form-group row d-flex align-items-center justify-content-center pt-2">
                             <label for="inputName2" class="col-sm-4 col-form-label text-right">Unit Eselon 1</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-wide" name="nama_organisasi" value="<?php echo $organisasi['unit_eselon1'] ?? ''; ?>" required>
+                                <input type="text" class="form-control form-control-wide" name="unit_eselon1" value="<?php echo $organisasi['unit_eselon1'] ?? ''; ?>" required>
                             </div>
                         </div>
                     
@@ -171,7 +171,7 @@ $organisasi = $result->fetch_assoc();
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputJabatan" class="col-sm-4 col-form-label text-right">Jabatan</label>
                             <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-wide" id="inputJabatan" name="jabatan" required>
+                                <input type="text" class="form-control form-control-wide" id="inputJabatan" name="jabatan" value="<?php echo $organisasi['jabatan'] ?? ''; ?>" required>
                             </div>
                         </div>
                     
@@ -181,7 +181,7 @@ $organisasi = $result->fetch_assoc();
                                 <a href="profile.php" class="btn btn-secondary">Kembali</a>
                     
                                 <!-- Submit Button -->
-                                <button type="submit" class="btn btn-primary" name="submit">Submit</button>
+                                <button type="submit" id="formSubmit" class="btn btn-primary" name="submit">Submit</button>
                             </div>
                         </div>
                     </form>                    
@@ -191,6 +191,24 @@ $organisasi = $result->fetch_assoc();
             </div>
         </div>
 
+        <!-- Modal Konfirmasi Form Profile -->
+        <div class="modal fade" id="confirmSubmitModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Konfirmasi</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Apakah Anda yakin ingin mengirim form ini?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" id="confirmSubmitBtn" class="btn btn-primary">Kirim</button>
+                </div>
+                </div>
+            </div>
+        </div>
 
 
         <!--Footer-->
@@ -205,5 +223,32 @@ $organisasi = $result->fetch_assoc();
                 </div>
             </div>
         </div>
+
+        <!-- Include jQuery -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <!-- Include Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // Handle form submit
+                $('#organisasiForm').on('submit', function(e) {
+                    e.preventDefault(); // Prevent default submission
+                    $('#confirmSubmitModal').modal('show'); // Show modal on submit
+                });
+
+                // Handle the confirm button in the modal
+                $('#confirmSubmitBtn').on('click', function() {
+                    $('#confirmSubmitModal').modal('hide'); // Hide the modal
+
+                    // Submit the form after hiding the modal
+                    setTimeout(function() {
+                        $('#organisasiForm').off('submit').submit(); 
+                        document.getElementById('formSubmit').click();// Remove the prevent and submit
+                    }, 300); // You can adjust the delay if necessary
+                });
+            });
+        </script>   
     </body>
 </html>

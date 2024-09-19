@@ -31,6 +31,15 @@
             .btn-custom-corner {
                 border-radius: 15px;
             }
+
+            .kategori{
+                background-color: #36C2CE;
+                border: 0px;
+            }
+
+            .btn a:hover{
+                background-color:white;
+            }
         </style>
     </head>
     <body>
@@ -66,18 +75,18 @@
         <div class="container-fluid text-center" style="color:black; padding-top:40px;">
             <div class="row">
               <div class="col"> 
-                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Kualitas Informasi</a></div>
-                    <div class="pt-4"><a href="index.html" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Jenis Informasi</a></div>
-                    <div class="pt-4 pb-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Pelayanan Informasi</a></div>
+                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Kualitas Informasi</a></div>
+                    <div class="pt-4"><a href="index.html" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Jenis Informasi</a></div>
+                    <div class="pt-4 pb-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Pelayanan Informasi</a></div>
               </div>
               <div class="col">
-                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Digitalisasi</a></div>
-                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Sarana Prasarana</a></div>
-                    <div class="pt-4 pb-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="font-size:x-large">Komitmen Organisasi</a></div>
+                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Digitalisasi</a></div>
+                    <div class="pt-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Sarana Prasarana</a></div>
+                    <div class="pt-4 pb-4"><a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner kategori" style="font-size:x-large">Komitmen Organisasi</a></div>
               </div>
             </div>
             <div class="pt-5">
-                <a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="width:50%; font-size:x-large">Beranda</a>
+                <a href="/home" class="btn btn-secondary btn-full-width btn-custom-corner" style="width:50%; font-size:x-large; background-color: #4535C1">Beranda</a>
             </div>
         </div>  
     </body>

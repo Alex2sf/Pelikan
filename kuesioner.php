@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 // Cek koneksi database
 if ($conn->connect_error) {
@@ -34,10 +34,10 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
                 if ($last_subkategori1 != '') {
                     echo "</tbody></table><br>"; // Close previous table if any
                 }
-                echo "<table style='width: 100%; margin-bottom: 10px;' >
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
                         <thead>
-                            <tr style='background-color: #003366; color: white;'>
-                                <th style='padding: 10px;'>{$row['subkategori1']}</th>
+                            <tr style='background-color: #343A40; color: white;'>
+                                <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
                             </tr>
                         </thead>
                         <tbody>";
@@ -51,9 +51,9 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
                 if ($last_subkategori2 != '') {
                     echo "</tbody></table><br>"; // Close previous table if any
                 }
-                echo "<table style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
                         <thead>
-                            <tr style='background-color: yellow; color: black; text-align: center;'>
+                            <tr style='background-color: #343A40; color: white;'>
                                 <th style='padding: 10px; width: 60%;'>{$row['subkategori2']}</th>
                             </tr>
                         </thead>
@@ -67,9 +67,9 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
                 if ($last_subkategori3 != '') {
                     echo "</tbody></table><br>"; // Close previous table if any
                 }
-                echo "<table style='border: 1px solid black; border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
                         <thead>
-                            <tr style='background-color: #FF9900; font-weight: bold;'>
+                            <tr style='background-color: #343A40; color: white;'>
                                 <th style='padding: 10px; width: 40%;'>{$row['subkategori3']}</th>
                                 <th style='padding: 10px; width: 10%;'>Bobot</th>
                                 <th style='padding: 10px; width: 30%;'>Web</th>
@@ -83,12 +83,12 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
             }
 
             // Display questions related to SubKategori3
-            echo "<tr style='text-align: left;'>
+            echo "<tr>
                     <td style='padding: 8px; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
                     <td style='padding: 8px; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
                     <td style='padding: 8px; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>
                     <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                        <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya'> Ya <br>
+                        <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya'> Ya
                         <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak'> Tidak
                     </td>
                     <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
@@ -100,7 +100,7 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
                   </tr>";
         }
         echo "</tbody></table><br>";
-        echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #4535C1; color: white; border: none; border-radius: 15px; width: 100%; margin-bottom:90px;'>";
+        echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px;'>";
         echo "</form>";
     } else {
         echo "Tidak ada pertanyaan untuk kategori ini.";
