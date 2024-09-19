@@ -3,6 +3,31 @@ ob_start();
 session_start();
 $username="";
 $username1=$_SESSION["role"];
+
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
+// Ambil data organisasi
+$sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_count = $row['total_count'];
+} else {
+    $total_count = 0; // Atau bisa menampilkan pesan error
+}
+
+$sql = "SELECT COUNT(can_fill_out) AS total_cfo FROM organisasi WHERE can_fill_out = '0'";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_cfo = $row['total_cfo'];
+} else {
+    $total_cfo = 0; // Atau bisa menampilkan pesan error
+}
+
 ?>
 
 <html lang="en">
@@ -13,7 +38,7 @@ $username1=$_SESSION["role"];
         <script type="text/javascript" src="../js/bootstrap.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
-        <link href="pelikan.css" type="text/css" rel="stylesheet">
+        <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             body{
@@ -84,7 +109,7 @@ $username1=$_SESSION["role"];
             <div class="row">
                 <div class="col" style="border-right: 5px solid #4535C1">
                     <div class="col">
-                        <b style="font-size:50px;">120</b>
+                        <b style="font-size:50px;"><?php echo $total_count; ?></b>
                     </div>
                     <div class="col">
                         UK/UPT Teregistrasi
@@ -92,7 +117,7 @@ $username1=$_SESSION["role"];
                 </div>
                 <div class="col" style="border-right: 5px solid #4535C1">
                     <div class="col">
-                        <b style="font-size:50px;">120</b>
+                        <b style="font-size:50px;"><?php echo $total_cfo; ?></b>
                     </div>
                     <div class="col">
                         UK/UPT Menjawab Kuesioner
