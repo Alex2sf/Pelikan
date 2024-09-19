@@ -2,10 +2,10 @@
 session_start();
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $password = $_POST['password'];
+    $password = md5($_POST['password']); // Enkripsi MD5
 
     // Koneksi ke database
-    $conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+    $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
     if ($conn->connect_error) {
         die("Koneksi gagal: " . $conn->connect_error); // Tampilkan pesan jika koneksi gagal
     }
@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $row = $result->fetch_assoc();
         $_SESSION['id_akun'] = $row['id_akun'];
         $_SESSION['role'] = $row['role'];
-        header("Location: penilai_dashboard.php"); // Arahkan ke halaman dashboard penilai
+        header("Location: penilai_beranda.php"); // Arahkan ke halaman dashboard penilai
         exit();
     } else {
         echo "<p style='color: red;'>Username atau password salah.</p>";
@@ -47,58 +47,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Penilai</title>
     <style>
-        body {
+      body {
+            background-image: url(img/KKP.jpg);
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
             margin: 0;
         }
         .login-container {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            background-color: rgba(69, 53, 193, 0.8);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            color: #ffffff;
         }
         h2 {
             text-align: center;
+            color: #ffffff;
             margin-bottom: 20px;
-            font-size: 24px;
-            color: #333;
         }
         label {
-            font-size: 14px;
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
             color: #333;
         }
-        input[type="text"],
-        input[type="password"] {
+        input[type="text"], input[type="password"], select, input[type="email"] {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             box-sizing: border-box;
+            color: #333;
+            font-size: 16px;
         }
         input[type="submit"] {
             width: 100%;
-            background-color: #007bff;
-            color: white;
-            padding: 10px;
+            padding: 15px;
+            background-color: #4535C1;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
+            color: #ffffff;
+            font-size: 18px;
             cursor: pointer;
-            font-size: 16px;
+            transition: background-color 0.3s ease;
         }
         input[type="submit"]:hover {
-            background-color: #0056b3;
+            background-color: #2f2a8a;
         }
-        .error-message {
-            color: red;
-            font-size: 14px;
-            text-align: center;
+        #penilai-details, #organisasi-details {
+            display: none;
+        }
+
+        /* Custom styles for the modal */
+        .modal-header {
+            background-color: #4535C1;
+            color: white;
+        }
+        .modal-footer {
+            background-color: #f1f1f1;
+        }
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        .modal-body {
+            font-size: 1rem;
+        }
+        .btn-close {
+            filter: invert(1);
         }
     </style>
 </head>
