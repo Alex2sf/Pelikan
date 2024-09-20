@@ -62,8 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </style>
     </head>
     <body>
-
-        <div class="container text-center" style="margin-top:60px;">
+        <div class="container text-center" style="margin-top:30px;">
             <div class="row">
                 <div class="col"></div>
                 <div class="col login">
@@ -79,10 +78,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                           <input class="form-control" type="password" name="password" id="password" placeholder="Password" required>
                         </div>
                         <div class="form-check pt-2 d-flex align-items-left">
-                          <input type="checkbox" class="form-check-input me-2" id="dropdownCheck">
-                          <label class="form-check-label pb-3" for="dropdownCheck">
-                            Remember me
-                          </label>  
                         </div>
                         <button type="submit" class="btn btn-primary" value="Login" style="background-color: #36C2CE; color:black">Log in</button>
                     </form>
