@@ -1,9 +1,10 @@
 <?php
+
+ob_start();
 session_start();
-if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
-    header("Location: login_penilai.php");
-    exit();
-}
+$username="";
+$username1=$_SESSION["role"];
+
 
 $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
@@ -20,10 +21,19 @@ $id_akun = $_SESSION['id_akun'];
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Penilai</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
+        <link href="pelikan.css" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        
     <!-- Tambahkan gaya CSS Anda di sini -->
     <style>
         /* Style yang sama dengan kode sebelumnya */
@@ -49,7 +59,7 @@ body {
     background-position: center; /* Menyelaraskan gambar ke tengah */
     background-repeat: no-repeat; /* Menghindari pengulangan gambar */
     background-attachment: fixed; /* Gambar latar belakang tetap saat scroll */
-    color: #333; /* Warna teks yang kontras dengan gambar latar belakang */
+    color: black; /* Warna teks yang kontras dengan gambar latar belakang */
     font-family: Arial, sans-serif; /* Font halaman */
     margin: 0; /* Menghilangkan margin default */
     padding: 0; /* Menghilangkan padding default */
@@ -58,26 +68,6 @@ body {
     flex-direction: column;
     justify-content: space-between;
 }
-.navbar {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .navbar a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .navbar a:hover {
-            text-decoration: underline;
-        }
-        .navbar a {
-                margin: 0 10px;
-            }
 
 main {
     padding: 20px;
@@ -147,51 +137,108 @@ footer {
 }
 
 /* Gaya untuk elemen grid-item */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 .grid-item {
-              /* Warna latar belakang item */
-    color: black;                        /* Warna teks */
-    padding: 1px;                       /* Ruang di dalam setiap item */
-    text-align: left;                  /* Teks di tengah */
+    font-family: 'Poppins', sans-serif;  /* Menggunakan font Poppins */
     font-size: 18px;                     /* Ukuran font */
-    border-radius: 1px;                  /* Membuat sudut membulat */
+    font-weight: 600;                    /* Mengatur ketebalan font */
+    color: #333;                         /* Warna teks */
+    background-color: transparent;           /* Warna latar belakang item */
+    padding: 15px;                       /* Ruang di dalam setiap item */
+    text-align: left;                    /* Teks rata kiri */
+    border-radius: 8px;                  /* Membuat sudut membulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Animasi hover */
+    letter-spacing: 0.5px;               /* Jarak antar huruf */
+    line-height: 1.6;                    /* Tinggi baris */
 }
+
+.grid-item:hover {
+    background-color: #e0e0e0;           /* Ubah warna latar belakang saat di-hover */
+    transform: translateY(-5px);         /* Efek melayang ke atas saat di-hover */
+}
+
 .logo {
     margin-right: auto; /* Memastikan logo tetap di sisi kiri, sementara menu di sebelah kanan */
   }
   .logo img {
     margin-right: 10px; /* Memberi jarak antara gambar dan teks */
   }
+  .pelikan {
+            font-family: 'Arial', sans-serif;
+            font-size: 35px ;
+            color: #3498db;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .pelikan:hover {
+            color: #e74c3c;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .pelikan::after {
+            
+            font-size: 0.5em;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
-    <!-- Header Section -->
-    <header>
-        
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 80px;">
-            <div class="container-fluid fs-4">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
-                    <img src="img/1.png" alt="Logo" width="80" height="64" class="d-inline-block align-text-top">
+     <!--Navigasi Bar-->
+        <!--Navigasi Bar-->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
+                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
                 </a>
-                <div>Selamat Datang Di Sistem Penilaian</div>
+                <div class="pelikan">PELIKAN (penilai)</div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="navbar-nav ms-auto">
-                        <li>
-                            <a class="nav-link active" aria-current="page" href="list_organisasi.php">Organisasi</a>
+                    <ul class="nav nav-tabs ms-auto">
+                        <li class="nav-item px-2">
+                            <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
                         </li>
-                        <li>
-                            <a class="nav-link active" aria-current="page" href="logout_penilai.php">Logout</a>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
                         </li>
                        
-                        
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
                     </ul>
                 </div>
             </div>
-</nav>
-    </header>
+        </nav>
+
    <div>
+    <br>
+    <br>
     <h1 class="uppercase-bold">Selamat datang</h1>
     <h1 class="uppercase-bold">PPID KKP</h1><br><br><br><br>
     
