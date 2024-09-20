@@ -4,7 +4,7 @@ session_start();
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
