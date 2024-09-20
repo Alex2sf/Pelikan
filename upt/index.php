@@ -100,7 +100,7 @@ if ($result) {
             <img src="../img/Kantor KKP.jpg" class="img-fluid" alt="...">
             <div class="overlay-text">
                 <b>Pelikan</b>
-                <div style="font-size:18;">Pemantauan Evaluasi Layanan Informasi Kementerian <br> Kelautan dan Perikanan</div>
+                <div style="font-size:18px;">Pemantauan Evaluasi Layanan Informasi Kementerian <br> Kelautan dan Perikanan</div>
             </div>
         </div>                
 

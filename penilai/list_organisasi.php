@@ -104,7 +104,7 @@ $result = $stmt->get_result();
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
                     <ul class="nav nav-tabs ms-auto">
                         <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="penilai_beranda.php">Beranda</a>
+                            <a class="nav-link black" aria-current="page" href="penilai_beranda.php">Beranda</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
