@@ -21,11 +21,11 @@ $id_akun = $_SESSION['id_akun'];
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Penilai</title>
-    <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
         <script type="text/javascript" src="../js/bootstrap.js"></script>
@@ -137,14 +137,28 @@ footer {
 }
 
 /* Gaya untuk elemen grid-item */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
 .grid-item {
-              /* Warna latar belakang item */
-    color: black;                        /* Warna teks */
-    padding: 1px;                       /* Ruang di dalam setiap item */
-    text-align: left;                  /* Teks di tengah */
+    font-family: 'Poppins', sans-serif;  /* Menggunakan font Poppins */
     font-size: 18px;                     /* Ukuran font */
-    border-radius: 1px;                  /* Membuat sudut membulat */
+    font-weight: 600;                    /* Mengatur ketebalan font */
+    color: #333;                         /* Warna teks */
+    background-color: transparent;           /* Warna latar belakang item */
+    padding: 15px;                       /* Ruang di dalam setiap item */
+    text-align: left;                    /* Teks rata kiri */
+    border-radius: 8px;                  /* Membuat sudut membulat */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Bayangan lembut */
+    transition: background-color 0.3s ease, transform 0.3s ease; /* Animasi hover */
+    letter-spacing: 0.5px;               /* Jarak antar huruf */
+    line-height: 1.6;                    /* Tinggi baris */
 }
+
+.grid-item:hover {
+    background-color: #e0e0e0;           /* Ubah warna latar belakang saat di-hover */
+    transform: translateY(-5px);         /* Efek melayang ke atas saat di-hover */
+}
+
 .logo {
     margin-right: auto; /* Memastikan logo tetap di sisi kiri, sementara menu di sebelah kanan */
   }
