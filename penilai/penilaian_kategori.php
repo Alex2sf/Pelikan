@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .navbar a {
             float: left;
             display: block;
-            color: white;
+            color: black;
             text-align: center;
             padding: 14px 20px;
             text-decoration: none;

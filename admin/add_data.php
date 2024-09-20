@@ -82,7 +82,7 @@ $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM 
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
+    
         /* Reset untuk menghapus margin dan padding bawaan */
         <style>
         body {
