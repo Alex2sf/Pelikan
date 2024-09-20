@@ -279,13 +279,13 @@ input[type="submit"]:hover {
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
                     <ul class="nav nav-tabs ms-auto">
                         <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
+                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                            <a class="nav-link active" href="akses_penilai.php">Akses Penilai</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="add_data.php">Kuesioner</a>
@@ -412,5 +412,44 @@ input[type="submit"]:hover {
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
 
+
+    <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--Footer-->
+        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
+            <div class="row">
+                <div class="col">
+                </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
 </body>
 </html>

@@ -1,15 +1,18 @@
 <?php
 // index.php
-
-ob_start();
 session_start();
-$username="";
-$username1=$_SESSION["role"];
+
+// Check if the user is logged in
+if (isset($_SESSION['username'])) {
+    $username = $_SESSION['username'];
+} else {
+    $username = null;  // If the user is not logged in, set username to null
+}
 // Database connection
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "emone";  // Change this to your database name
+$dbname = "sigh";  // Change this to your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
@@ -22,6 +25,10 @@ $sql = "SELECT DISTINCT unit_eselon1 FROM organisasi";
 $result = $conn->query($sql);
 ?>
 <!DOCTYPE html>
+<html>
+<head>
+    <title>Daftar Organisasi</title>
+    <!DOCTYPE html>
 <html lang="en">
     <head>
     <meta charset="UTF-8">
@@ -32,7 +39,6 @@ $result = $conn->query($sql);
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        <style>
            <style>
 /* Body Styling */
 body {
@@ -215,12 +221,21 @@ footer {
     display: none;
 }
 
-    </style>
         </style>
-    </head>
-    <body>
-        <!--Navigasi Bar-->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+    <script>
+        function toggleOrganizations(id_eselon) {
+            var orgRow = document.getElementById("org-" + id_eselon);
+            if (orgRow.style.display === "none" || orgRow.style.display === "") {
+                orgRow.style.display = "table-row";
+            } else {
+                orgRow.style.display = "none";
+            }
+        }
+    </script>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
             <div class="container-fluid fs-5">
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
                     <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
@@ -232,7 +247,7 @@ footer {
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
                     <ul class="nav nav-tabs ms-auto">
                         <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
+                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
@@ -247,23 +262,26 @@ footer {
                             <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link active" href="Daftar.php">Daftar Upt</a>
                         </li>
                         <?php
-                        if ($username==$username1){
+
+                        if ($username === null) {
+                            // Show login option if user is not logged in
                             echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
+                                    <a class="nav-link black" href="login.php">Login</a>
+                                </li>';
+                        } else {
+                            // Show profile and logout options if user is logged in
                             echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
+                                    <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Profile
+                                    </a>
+                                    <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                        <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                                    </ul>
+                                </li>';
                         }
                         ?>
                     </ul>
@@ -271,17 +289,13 @@ footer {
             </div>
         </nav>
 
-    
-<body>
-
 <h2>Daftar Organisasi Berdasarkan Eselon</h2>
 
 <!-- Table showing Eselon and Organizations -->
 <table>
     <thead>
         <tr>
-            <th>Nama Eselon</th>
-            <th>Aksi</th>
+            <th colspan="12">Nama Eselon</th>
         </tr>
     </thead>
     <tbody>
@@ -301,7 +315,6 @@ footer {
                 echo "<td colspan='2'>";
                 echo "<table style='width: 100%;'>";
                 echo "<thead>";
-                echo "<tr><th>Nama Organisasi</th><th>Aksi</th></tr>";
                 echo "</thead>";
                 echo "<tbody>";
                 
@@ -339,6 +352,33 @@ footer {
         ?>
     </tbody>
 </table>
+
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+  <!-- Script untuk menangani modal dan submit form -->
+  <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
+
+
 
 </body>
 </html>

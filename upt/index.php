@@ -4,7 +4,7 @@ session_start();
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
@@ -100,7 +100,7 @@ if ($result) {
             <img src="../img/Kantor KKP.jpg" class="img-fluid" alt="...">
             <div class="overlay-text">
                 <b>Pelikan</b>
-                <div style="font-size:18;">Pemantauan Evaluasi Layanan Informasi Kementerian <br> Kelautan dan Perikanan</div>
+                <div style="font-size:18px;">Pemantauan Evaluasi Layanan Informasi Kementerian <br> Kelautan dan Perikanan</div>
             </div>
         </div>                
 
