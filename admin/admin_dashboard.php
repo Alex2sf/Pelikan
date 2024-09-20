@@ -25,7 +25,6 @@ $username1=$_SESSION["role"];
     </head>
     <body>
         <!--Navigasi Bar-->
-        <!--Navigasi Bar-->
         <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
             <div class="container-fluid fs-5">
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
@@ -76,14 +75,14 @@ $username1=$_SESSION["role"];
                 </div>
             </div>
         </nav>
-        
+
         <div class="image-container">
             <img src="../img/Kantor KKP.jpg" class="img-fluid" alt="...">
             <div class="overlay-text">
                 <b>Pelikan</b>
-                <div style="font: size 10px;;">Pemantauan dan Evaluasi Layanan Informasi  Kementerian <br> Kelautan dan Perikanan</div>
+                <div style="font-size:18px;">Pemantauan Evaluasi Layanan Informasi Kementerian <br> Kelautan dan Perikanan</div>
             </div>
-        </div>                
+        </div>              
 
         <!--Container Putih Informasi Organisasi-->
         <div class="container-fluid text-center" style="background-color: white; color:black; padding:40px">
@@ -116,7 +115,24 @@ $username1=$_SESSION["role"];
         </div>
 
 
-        
+        <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!--Footer-->
         <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
@@ -130,5 +146,12 @@ $username1=$_SESSION["role"];
                 </div>
             </div>
         </div>
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
     </body>
 </html>

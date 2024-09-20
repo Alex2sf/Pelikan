@@ -175,7 +175,7 @@ input[type="submit"]:hover {
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
                     <ul class="nav nav-tabs ms-auto">
                         <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
+                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
@@ -187,7 +187,7 @@ input[type="submit"]:hover {
                             <a class="nav-link black" href="add_data.php">Kuesioner</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
+                            <a class="nav-link active" href="admin_akses.php">Akses UPT</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
@@ -252,5 +252,33 @@ document.querySelector('select[name="role"]').addEventListener('change', functio
     document.getElementById('organisasi-details').style.display = role === 'user' ? 'block' : 'none';
 });
     </script>
+
+
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
 </body>
 </html>

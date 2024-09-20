@@ -41,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url(img/KKP.jpg);
+            background-image: url(../img/KKP.jpg);
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center center;
