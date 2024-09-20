@@ -3,7 +3,12 @@ session_start();
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     header("Location: login_penilai.php");
     exit();
+    
 }
+ob_start();
+
+$username="";
+$username1=$_SESSION["role"];
 
 $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
@@ -84,7 +89,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- Google Fonts -->
    <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">-->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
+  
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
+        <link href="pelikan.css" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         
     
     <style>
@@ -99,23 +110,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             margin-top: 180px;
         }
 
-        .navbar {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .navbar a {
-            color: white;
-            margin: 0 15px;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .navbar a:hover {
-            text-decoration: underline;
-        }
+        
 
         h2 {
             text-align: center;
@@ -236,12 +231,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 padding: 8px;
             }
 
-            .navbar a {
-                margin: 0 10px;
-            }
+         
         }
     </style>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 80px;">
+    <!--<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 80px;">
             <div class="container-fluid fs-4">
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
                     <img src="img/1.png" alt="Logo" width="80" height="64" class="d-inline-block align-text-top">
@@ -265,15 +258,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 </nav>
 
-</head>
+</head>-->
 
 <body>
- <!-- Navbar -->
-    <!-- <div class="navbar">
-        <a href="list_organisasi.php">Daftar Organisasi</a>
-        <a href="logout.php">Logout</a>
-    </div>
-    -->
+ <!--Navigasi Bar-->
+        <!--Navigasi Bar-->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
+                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                </a>
+                <div class="pelikan">PELIKAN (penilai)</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
+                    <ul class="nav nav-tabs ms-auto">
+                        <li class="nav-item px-2">
+                            <a class="nav-link active" aria-current="page" href="penilai_beranda.php">Beranda</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
+                        </li>
+                       
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
     <h2>Dashboard Penilai</h2>
 
     <div class="container">

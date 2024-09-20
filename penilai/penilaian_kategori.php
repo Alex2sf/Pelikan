@@ -4,6 +4,11 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     header("Location: login_penilai.php");
     exit();
 }
+ob_start();
+session_start();
+$username="";
+$username1=$_SESSION["role"];
+
 
 $conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
 
@@ -65,7 +70,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Penilaian Kategori</title>
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
+        <link href="pelikan.css" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -153,12 +163,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <a href="penilaian_kuesioner.php">Penilaian Kuesioner</a>
-        <a href="ranking.php">Ranking</a>
-        <a href="penilaian_kategori.php">Penilaian Kategori</a>
-    </div>
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
+                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                </a>
+                <div class="pelikan">PELIKAN (penilai)</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
+                    <ul class="nav nav-tabs ms-auto">
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" aria-current="page" href="penilai_beranda.php">Beranda</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" aria-current="page" href="ranking.php">Ranking</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link active" aria-current="page" href="penilaian_kategori.php">Penilaian Kategori</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
+                        </li>
+                       
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
 
     <h2>Penilaian Kategori</h2>
 
