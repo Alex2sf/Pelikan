@@ -29,7 +29,7 @@ $organisasi = $result->fetch_assoc();
         <script type="text/javascript" src="../js/bootstrap.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
-        <link href="pelikan.css" type="text/css" rel="stylesheet">
+        <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             body{
@@ -104,7 +104,7 @@ $organisasi = $result->fetch_assoc();
                             </a>
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" href="logout.php">Logout</a></li>
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
                             </ul>
                             </li>';
                         }
@@ -186,8 +186,27 @@ $organisasi = $result->fetch_assoc();
             </div>
         </div>
 
+        <!-- Modal Konfirmasi Logout -->
+        <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!--Footer-->
-        <div class="container-fluid text-center fixed-bottom" style="background-color: #4535C1; color:white; padding:20px; margin-top:-20px;">
+        <div class="container-fluid text-center fixed-bottom" style="background-color: #4535C1; color:white; padding:20px">
             <div class="row">
                 <div class="col">
                 </div>  
@@ -198,5 +217,12 @@ $organisasi = $result->fetch_assoc();
                 </div>
             </div>
         </div>
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
     </body>
 </html>
