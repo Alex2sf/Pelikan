@@ -115,6 +115,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-weight: 600;
             margin-bottom: 8px;
             color: #333;
+            font-family: Arial, sans-serif;
         }
         input[type="text"], input[type="password"], select, input[type="email"] {
             width: 100%;

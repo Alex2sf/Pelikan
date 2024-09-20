@@ -272,7 +272,7 @@ input[type="submit"]:hover {
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
                     <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
                 </a>
-                <div>Pelikan</div>
+                <div>Admin</div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -432,18 +432,7 @@ input[type="submit"]:hover {
         </div>
 
 
-        <!--Footer-->
-        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
-            <div class="row">
-                <div class="col">
-                </div>  
-                <div class="col-8">
-                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
-                </div>
-                <div class="col">
-                </div>
-            </div>
-        </div>
+
 
         <!-- Script untuk menangani modal dan submit form -->
         <script type="text/javascript">

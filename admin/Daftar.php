@@ -240,7 +240,7 @@ footer {
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
                     <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
                 </a>
-                <div>Pelikan</div>
+                <div>Admin</div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
