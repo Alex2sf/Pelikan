@@ -1,7 +1,12 @@
 <?php
-
-ob_start();
 session_start();
+if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
+    header("Location: login_penilai.php");
+    exit();
+    
+}
+ob_start();
+
 $username="";
 $username1=$_SESSION["role"];
 
