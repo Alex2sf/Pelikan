@@ -3,12 +3,7 @@ session_start();
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     header("Location: login_penilai.php");
     exit();
-    
 }
-ob_start();
-
-$username="";
-$username1=$_SESSION["role"];
 
 $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
@@ -46,19 +41,18 @@ $sql = "SELECT k.id_kuesioner, p.pertanyaan, k.jawaban, k.link, k.dokumen, k.nil
         LEFT JOIN subkategori2 sub2 ON p.id_subkategori2 = sub2.id_subkategori2
         LEFT JOIN subkategori3 sub3 ON p.id_subkategori3 = sub3.id_subkategori3
         WHERE k.id_organisasi = ? AND k.id_penilai = ?
-        ORDER BY o.nama_organisasi, k.verifikasi, k.id_kuesioner DESC";
+        ORDER BY cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3, k.verifikasi, k.id_kuesioner DESC";
+
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ii', $id_organisasi, $id_penilai);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Inisialisasi array untuk menyimpan data kuesioner
-$kuesionerByOrganisasi = [];
-
-// Kelompokkan kuesioner berdasarkan organisasi
-while ($row = $result->fetch_assoc()) {
-    $kuesionerByOrganisasi[$row['nama_organisasi']][] = $row;
-}
+// Inisialisasi variabel untuk kategori dan subkategori
+$last_kategori = '';
+$last_subkategori1 = '';
+$last_subkategori2 = '';
+$last_subkategori3 = '';
 
 // Proses update data kuesioner
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -81,278 +75,185 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Penilai</title>
-    <!-- Google Fonts -->
-   <!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap">-->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  
-        <title>Document</title>
-        <script type="text/javascript" src="../js/bootstrap.js"></script>
-        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
-        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
-        <link href="pelikan.css" type="text/css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        
-    
     <style>
-        .bg-blue-dark {
-            background-color: #4535C1; /* Warna biru gelap */
-        }
         body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f6f9;
-            margin-top: 180px;
         }
-
-        
-
-        h2 {
+        .navbar {
+            background-color: #333;
+            color: white;
+            padding: 10px;
             text-align: center;
-            color: #34495e;
-            margin: 20px 0;
-            font-weight: 600;
         }
-
-        h3 {
-            color: #2c3e50;
-            margin-top: 30px;
-            margin-bottom: 15px;
+        .navbar a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
         }
-
+        .navbar a:hover {
+            text-decoration: underline;
+        }
         .container {
             padding: 20px;
-            max-width: 1500px;
-            margin: 0 auto;
-            background-color: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
         }
-
-        th,
-        td {
-            border: 1px solid #e1e4e8;
-            padding: 12px;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        th {
+            background-color: #f4f4f4;
             text-align: left;
         }
-
-        th {
-            background-color: #4535C1;
-            color: white;
-            font-weight: 600;
-            text-align: center;
-        }
-
-        td {
+        tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
-        tr:nth-child(even) {
-            background-color: #f3f3f3;
-        }
-
         .button {
-            background-color: #3498db;
+            background-color: #4CAF50;
             color: white;
             border: none;
             padding: 10px 20px;
             cursor: pointer;
             text-decoration: none;
             border-radius: 5px;
-            font-weight: 500;
         }
-
         .button:hover {
-            background-color: #2980b9;
+            background-color: #45a049;
         }
-
         .form-group {
             margin-bottom: 15px;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 5px;
         }
-
-        .form-group input,
-        .form-group textarea {
+        .form-group input, .form-group textarea {
             width: 100%;
-            padding: 10px;
+            padding: 8px;
             box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        input[type="number"],
-        textarea {
-            resize: none;
-        }
-
-        input[type="checkbox"] {
-            width: auto;
-            transform: scale(1.2);
-        }
-
-        button[type="submit"] {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            background-color: blue;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button[type="submit"]:hover {
-            background-color: #2ecc71;
-        }
-
-        @media (max-width: 768px) {
-            .container {
-                padding: 15px;
-            }
-
-            table th,
-            table td {
-                padding: 8px;
-            }
-
-         
         }
     </style>
-    <!--<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 80px;">
-            <div class="container-fluid fs-4">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
-                    <img src="img/1.png" alt="Logo" width="80" height="64" class="d-inline-block align-text-top">
-                </a>
-                <div>Sistem Penilaian</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="navbar-nav ms-auto">
-                        <li>
-                            <a class="nav-link active" aria-current="page" href="penilai_dashboard.php">Dashboard Penilai</a>
-                        </li>
-                        <li>
-                            <a class="nav-link active" aria-current="page" href="list_organisasi.php">Daftar Organisasi</a>
-                        </li>
-                       
-                        
-                    </ul>
-                </div>
-            </div>
-</nav>
-
-</head>-->
-
+</head>
 <body>
- <!--Navigasi Bar-->
-        <!--Navigasi Bar-->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div class="pelikan">PELIKAN (penilai)</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="penilai_beranda.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
-                        </li>
-                       
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="list_organisasi.php">Daftar Organisasi</a>
+        <a href="logout.php">Logout</a>
+    </div>
+
     <h2>Dashboard Penilai</h2>
 
     <div class="container">
         <form action="penilai_dashboard.php?id_organisasi=<?php echo $id_organisasi; ?>" method="POST">
-            <?php if (!empty($kuesionerByOrganisasi)): ?>
-                <?php foreach ($kuesionerByOrganisasi as $nama_organisasi => $kuesioners): ?>
-                    <h3>Organisasi: <?php echo htmlspecialchars($nama_organisasi); ?></h3>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Pertanyaan</th>
-                                <th>Jawaban</th>
-                                <th>Link</th>
-                                <th>Dokumen</th>
-                                <th>Nilai</th>
-                                <th>Catatan</th>
-                                <th>Verifikasi</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($kuesioners as $kuesioner): ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($kuesioner['pertanyaan']); ?></td>
-                                    <td><?php echo htmlspecialchars($kuesioner['jawaban']); ?></td>
-                                    <td><?php echo htmlspecialchars($kuesioner['link']); ?></td>
-                                    <td><?php echo htmlspecialchars($kuesioner['dokumen']); ?></td>
-                                    <td>
-                                        <input type="number" name="nilai[<?php echo $kuesioner['id_kuesioner']; ?>]" value="<?php echo htmlspecialchars($kuesioner['nilai']); ?>" step="0.01">
-                                    </td>
-                                    <td>
-                                        <textarea name="catatan[<?php echo $kuesioner['id_kuesioner']; ?>]"><?php echo htmlspecialchars($kuesioner['catatan']); ?></textarea>
-                                    </td>
-                                    <td style="text-align: center;">
-                                        <input type="checkbox" name="verifikasi[<?php echo $kuesioner['id_kuesioner']; ?>]" <?php echo $kuesioner['verifikasi'] ? 'checked' : ''; ?>>
-                                    </td>
-                                    <td>
-                                        <input type="hidden" name="update[<?php echo $kuesioner['id_kuesioner']; ?>]" value="1">
-                                    </td>
+            <?php
+            // Loop melalui hasil query
+            while ($row = $result->fetch_assoc()) {
+                // Jika kategori berubah, tutup tabel sebelumnya
+                if ($last_kategori != $row['kategori']) {
+                    if ($last_kategori != '') {
+                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                    }
+                    echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori
+                    $last_kategori = $row['kategori'];
+                }
+
+                // Jika SubKategori1 berubah, tutup tabel sebelumnya
+                if ($last_subkategori1 != $row['subkategori1']) {
+                    if ($last_subkategori1 != '') {
+                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                            <thead>
+                                <tr style='background-color: #343A40; color: black;'>
+                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
                                 </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                <?php endforeach; ?>
-                <button type="submit" class="button">Simpan Perubahan</button>
-            <?php else: ?>
-                <p>Tidak ada kuesioner yang tersedia untuk organisasi ini.</p>
-            <?php endif; ?>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori1 = $row['subkategori1'];
+                    $last_subkategori2 = ''; // Reset SubKategori2
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+
+                // Jika SubKategori2 berubah, tutup tabel sebelumnya
+                if ($last_subkategori2 != $row['subkategori2']) {
+                    if ($last_subkategori2 != '') {
+                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                            <thead>
+                                <tr style='background-color: #343A40; color: black;'>
+                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori2']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori2 = $row['subkategori2'];
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+
+                // Jika SubKategori3 berubah, tutup tabel sebelumnya
+                if ($last_subkategori3 != $row['subkategori3']) {
+                    if ($last_subkategori3 != '') {
+                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                            <thead>
+                                <tr style='background-color: #343A40; color: black;'>
+                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori3']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori3 = $row['subkategori3'];
+                }
+
+                // Tampilkan baris data pertanyaan
+                echo "<tr>
+                
+                        <td>{$row['pertanyaan']}</td>
+                        <td>{$row['jawaban']}</td>
+                        <td>{$row['link']}</td>
+                        <td>{$row['dokumen']}</td>
+                      
+                       <td>
+                            <input type='text' name='nilai[{$row['id_kuesioner']}]' placeholder='Nilai'>
+                          
+                        </td>
+                                               <td>
+                          <textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea>
+                          
+                        </td>
+                                                              <td>
+                            <label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label>
+                          
+                        </td>
+                          <td type = 'hidden'>
+                            <input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'>
+                          
+                        </td>
+                      </tr>";
+            }
+
+            // Tutup tabel terakhir
+            if ($last_subkategori3 != '') {
+                echo "</tbody></table><br>";
+            }
+            ?>
+            <button type="submit" class="button">Simpan Perubahan</button>
         </form>
     </div>
 </body>
-
 </html>
 
+<?php
+$conn->close();
+?>

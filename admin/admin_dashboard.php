@@ -18,7 +18,7 @@ $username1=$_SESSION["role"];
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             body{
-                user-select: none; Mencegah seleksi teks di seluruh halaman
+                user-select: none;
                 outline: none; /* Menghilangkan outline fokus */
             }
         </style>
@@ -53,6 +53,9 @@ $username1=$_SESSION["role"];
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="tampilan_isi.php">Download File</a>
                         </li>
                         <?php
                         if ($username==$username1){

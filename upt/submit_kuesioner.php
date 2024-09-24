@@ -1,5 +1,5 @@
 <?php
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 // Cek koneksi database
 if ($conn->connect_error) {

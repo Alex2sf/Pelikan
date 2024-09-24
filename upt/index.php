@@ -19,14 +19,14 @@ if ($result) {
     $total_count = 0; // Atau bisa menampilkan pesan error
 }
 
-$sql = "SELECT COUNT(can_fill_out) AS total_cfo FROM organisasi WHERE can_fill_out = '0'";
-$result = $conn->query($sql);
-if ($result) {
-    $row = $result->fetch_assoc();
-    $total_cfo = $row['total_cfo'];
-} else {
-    $total_cfo = 0; // Atau bisa menampilkan pesan error
-}
+// $sql = "SELECT COUNT(can_fill_out) AS total_cfo FROM organisasi WHERE can_fill_out = '0'";
+// $result = $conn->query($sql);
+// if ($result) {
+//     $row = $result->fetch_assoc();
+//     $total_cfo = $row['total_cfo'];
+// } else {
+//     $total_cfo = 0; // Atau bisa menampilkan pesan error
+// }
 
 ?>
 
@@ -109,7 +109,7 @@ if ($result) {
             <div class="row">
                 <div class="col" style="border-right: 5px solid #4535C1">
                     <div class="col">
-                        <b style="font-size:50px;"><?php echo $total_count; ?></b>
+                        <b style="font-size:50px;"></b>
                     </div>
                     <div class="col">
                         UK/UPT Teregistrasi
