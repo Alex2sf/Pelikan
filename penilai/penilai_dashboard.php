@@ -84,6 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #f9f9f9;
         }
         .navbar {
             background-color: #333;
@@ -101,20 +102,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             text-decoration: underline;
         }
         .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #333;
+            border-bottom: 2px solid #f4f4f4;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-bottom: 20px;
+            font-size: 14px;
         }
         th, td {
             border: 1px solid #ddd;
-            padding: 8px;
+            padding: 12px;
+            text-align: left;
         }
         th {
             background-color: #f4f4f4;
-            text-align: left;
+            font-weight: bold;
         }
         tr:nth-child(even) {
             background-color: #f9f9f9;
@@ -127,6 +140,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             cursor: pointer;
             text-decoration: none;
             border-radius: 5px;
+            display: inline-block;
         }
         .button:hover {
             background-color: #45a049;
@@ -143,6 +157,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             padding: 8px;
             box-sizing: border-box;
         }
+        .form-group textarea {
+            height: 80px;
+        }
+        .category-header {
+            background-color: #343A40;
+            color: white;
+            padding: 10px;
+            margin-top: 20px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -152,9 +176,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <a href="logout.php">Logout</a>
     </div>
 
-    <h2>Dashboard Penilai</h2>
-
     <div class="container">
+        <h2>Dashboard Penilai</h2>
         <form action="penilai_dashboard.php?id_organisasi=<?php echo $id_organisasi; ?>" method="POST">
             <?php
             // Loop melalui hasil query
@@ -164,19 +187,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     if ($last_kategori != '') {
                         echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                     }
-                    echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori
+                    echo "<div class='category-header'>{$row['kategori']}</div>"; // Tampilkan kategori
                     $last_kategori = $row['kategori'];
                 }
 
-                // Jika SubKategori1 berubah, tutup tabel sebelumnya
+                // Jika SubKategori1 berubah, tampilkan tabel baru
                 if ($last_subkategori1 != $row['subkategori1']) {
                     if ($last_subkategori1 != '') {
                         echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                     }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                    echo "<table>
                             <thead>
-                                <tr style='background-color: #343A40; color: black;'>
-                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
+                                <tr>
+                                    <th colspan='5'>{$row['subkategori1']}</th>
+                                </tr>
+                                <tr>
+                                    <th>Pertanyaan</th>
+                                    <th>Jawaban</th>
+                                    <th>Link</th>
+                                    <th>Dokumen</th>
+                                    <th>Nilai</th>
+                                    <th>Catatan</th>
+                                    <th>Verifikasi</th>
                                 </tr>
                             </thead>
                             <tbody>";
@@ -185,61 +217,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $last_subkategori3 = ''; // Reset SubKategori3
                 }
 
-                // Jika SubKategori2 berubah, tutup tabel sebelumnya
-                if ($last_subkategori2 != $row['subkategori2']) {
-                    if ($last_subkategori2 != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                            <thead>
-                                <tr style='background-color: #343A40; color: black;'>
-                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori2']}</th>
-                                </tr>
-                            </thead>
-                            <tbody>";
-                    $last_subkategori2 = $row['subkategori2'];
-                    $last_subkategori3 = ''; // Reset SubKategori3
-                }
-
-                // Jika SubKategori3 berubah, tutup tabel sebelumnya
-                if ($last_subkategori3 != $row['subkategori3']) {
-                    if ($last_subkategori3 != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                            <thead>
-                                <tr style='background-color: #343A40; color: black;'>
-                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori3']}</th>
-                                </tr>
-                            </thead>
-                            <tbody>";
-                    $last_subkategori3 = $row['subkategori3'];
-                }
-
                 // Tampilkan baris data pertanyaan
                 echo "<tr>
-                
                         <td>{$row['pertanyaan']}</td>
                         <td>{$row['jawaban']}</td>
                         <td>{$row['link']}</td>
                         <td>{$row['dokumen']}</td>
-                      
-                       <td>
-                            <input type='text' name='nilai[{$row['id_kuesioner']}]' placeholder='Nilai'>
-                          
-                        </td>
-                                               <td>
-                          <textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea>
-                          
-                        </td>
-                                                              <td>
-                            <label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label>
-                          
-                        </td>
-                          <td type = 'hidden'>
-                            <input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'>
-                          
-                        </td>
+                        <td><input type='text' name='nilai[{$row['id_kuesioner']}]' placeholder='Nilai'></td>
+                        <td><textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea></td>
+                        <td><label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label></td>
+                        <input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'>
                       </tr>";
             }
 
@@ -248,11 +235,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "</tbody></table><br>";
             }
             ?>
-            <button type="submit" class="button">Simpan Perubahan</button>
+           
         </form>
     </div>
+    
+    
 </body>
+<footer> <button type="submit" class="button">Simpan Perubahan</button></footer>
 </html>
+
 
 <?php
 $conn->close();

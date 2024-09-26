@@ -27,7 +27,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $nip_responden = $organisasi['nip_responden'];
         $id_penilai = $organisasi['id_penilai'];
     } else {
-        die('Organisasi data not found.');
+        echo "<script>
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'Data organisasi tidak ditemukan.'
+                });
+              </script>";
+        exit();
     }
 
     foreach ($_POST['jawaban'] as $id_pertanyaan => $jawaban) {
@@ -85,8 +92,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $stmt->close();
     $conn->close();
 
-    echo "Data telah berhasil dikirim.";
+    // Success notification
+    echo "<script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: 'Data telah berhasil dikirim.'
+            });
+          </script>";
 } else {
-    echo "Permintaan tidak valid.";
+    echo "<script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Permintaan tidak valid',
+                text: 'Form tidak valid atau belum diisi.'
+            });
+          </script>";
 }
 ?>

@@ -22,7 +22,7 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
-        echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data'>"; // Start the form
+        echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data' class='form-kuesioner'>"; // Start the form
         $last_subkategori1 = '';
         $last_subkategori2 = '';
         $last_subkategori3 = '';
@@ -34,10 +34,10 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
                 if ($last_subkategori1 != '') {
                     echo "</tbody></table><br>"; // Close previous table if any
                 }
-                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                echo "<table class='table-kuesioner'>
                         <thead>
-                            <tr style='background-color: #343A40; color: white;'>
-                                <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
+                            <tr class='subkategori1'>
+                                <th colspan='6'>{$row['subkategori1']}</th>
                             </tr>
                         </thead>
                         <tbody>";
@@ -48,64 +48,132 @@ if (isset($_POST['id_kategori']) && !empty($_POST['id_kategori'])) {
 
             // If SubKategori2 changes, create a new header
             if ($last_subkategori2 != $row['subkategori2']) {
-                if ($last_subkategori2 != '') {
-                    echo "</tbody></table><br>"; // Close previous table if any
-                }
-                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
-                        <thead>
-                            <tr style='background-color: #343A40; color: white;'>
-                                <th style='padding: 10px; width: 60%;'>{$row['subkategori2']}</th>
-                            </tr>
-                        </thead>
-                        <tbody>";
+                echo "<thead>
+                        <tr class='subkategori2'>
+                            <th colspan='6'>{$row['subkategori2']}</th>
+                        </tr>
+                      </thead>";
                 $last_subkategori2 = $row['subkategori2'];
-                $last_subkategori3 = ''; // Reset SubKategori3
             }
 
             // If SubKategori3 changes, create a new header
             if ($last_subkategori3 != $row['subkategori3']) {
-                if ($last_subkategori3 != '') {
-                    echo "</tbody></table><br>"; // Close previous table if any
-                }
-                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
-                        <thead>
-                            <tr style='background-color: #343A40; color: white;'>
-                                <th style='padding: 10px; width: 40%;'>{$row['subkategori3']}</th>
-                                <th style='padding: 10px; width: 10%;'>Bobot</th>
-                                <th style='padding: 10px; width: 30%;'>Web</th>
-                                <th style='padding: 10px; width: 10%;'>Jawaban</th>
-                                <th style='padding: 10px; width: 10%;'>Link</th>
-                                <th style='padding: 10px; width: 10%;'>Dokumen</th>
-                            </tr>
-                        </thead>
-                        <tbody>";
+                echo "<thead>
+                        <tr class='subkategori3'>
+                            <th>Pertanyaan</th>
+                            <th>Bobot</th>
+                            <th>Web</th>
+                            <th>Jawaban</th>
+                            <th>Link</th>
+                            <th>Dokumen</th>
+                        </tr>
+                      </thead>";
                 $last_subkategori3 = $row['subkategori3'];
             }
 
             // Display questions related to SubKategori3
             echo "<tr>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                    <td>{$row['pertanyaan']}</td>
+                    <td>{$row['bobot']}</td>
+                    <td><a href='{$row['web']}' target='_blank'>{$row['web']}</a></td>
+                    <td>
                         <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya'> Ya
                         <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak'> Tidak
                     </td>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                        <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link'>
+                    <td>
+                        <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' class='form-control'>
                     </td>
-                    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                        <input type='file' name='dokumen[{$row['id_pertanyaan']}]'>
+                    <td>
+                        <input type='file' name='dokumen[{$row['id_pertanyaan']}]' class='form-control'>
                     </td>
                   </tr>";
         }
         echo "</tbody></table><br>";
-        echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px;'>";
+        echo "<input type='submit' value='Kirim' class='btn-submit'>";
         echo "</form>";
     } else {
-        echo "Tidak ada pertanyaan untuk kategori ini.";
+        echo "<p class='no-data'>Tidak ada pertanyaan untuk kategori ini.</p>";
     }
 }
 
 $conn->close();
 ?>
+<style>
+    /* Form Container */
+.form-kuesioner {
+    margin: 20px auto;
+    max-width: 1800px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tabel Styling */
+.table-kuesioner {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.table-kuesioner th, .table-kuesioner td {
+    padding: 10px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table-kuesioner thead th {
+    background-color: #343A40;
+    color: white;
+}
+
+.subkategori1 th, .subkategori2 th {
+    background-color: #6C757D;
+    color: white;
+    font-weight: bold;
+}
+
+.subkategori3 th {
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+}
+
+/* Input Styles */
+.form-control {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.form-control[type="radio"] {
+    width: auto;
+    margin-right: 5px;
+}
+
+/* Submit Button */
+.btn-submit {
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.btn-submit:hover {
+    background-color: #0056b3;
+}
+
+/* No Data Message */
+.no-data {
+    font-size: 18px;
+    text-align: center;
+    color: #ff0000;
+    margin-top: 20px;
+}
+
+</style>
