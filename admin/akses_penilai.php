@@ -9,7 +9,7 @@ $username="";
 $username1=$_SESSION["role"];
 
 // Koneksi ke database
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
@@ -194,7 +194,7 @@ label {
     margin-bottom: 8px;
     font-weight: bold;
     font-size: 14px;
-    color: #black;
+    color: black;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -284,17 +284,30 @@ input[type="submit"]:hover {
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" href="akses_penilai.php">Akses Penilai</a>
+                        <!-- dropdown kuesioner -->
+                       <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuisoner</a></li>
+    
+                            </ul>
+                        </li>
+                        <!-- Dropdown Akses -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UPT</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
                         if ($username==$username1){
@@ -375,21 +388,22 @@ input[type="submit"]:hover {
     <!-- Success Modal -->
  <!-- Modal untuk Pesan Kesalahan dan Sukses -->
  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Berhasil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Pesan Sukses diisi melalui JavaScript -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Berhasil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Pesan Sukses diisi melalui JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="tutupModal" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
+
 
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -433,6 +447,13 @@ input[type="submit"]:hover {
 
 
 
+        <script>
+    // Tangkap tombol "Tutup" menggunakan ID
+    document.getElementById('tutupModal').addEventListener('click', function() {
+        // Arahkan ke halaman beranda setelah tombol "Tutup" diklik
+        window.location.href = 'admin_dashboard.php';
+    });
+</script>
 
         <!-- Script untuk menangani modal dan submit form -->
         <script type="text/javascript">

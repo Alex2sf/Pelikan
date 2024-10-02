@@ -1,8 +1,13 @@
 <?php
 ob_start();
 session_start();
-$username="";
-$username1=$_SESSION["role"];
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: admin_login.php");
+    exit();
+}
+
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+$username1 = 'admin';
 ?>
 
 <!DOCTYPE html>
@@ -18,7 +23,7 @@ $username1=$_SESSION["role"];
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             body{
-                user-select: none;
+                user-select: none; 
                 outline: none; /* Menghilangkan outline fokus */
             }
         </style>
@@ -36,26 +41,41 @@ $username1=$_SESSION["role"];
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
                     <ul class="nav nav-tabs ms-auto">
+                        <!-- beranda -->
                         <li class="nav-item px-2">
                             <a class="nav-link active" aria-current="page" href="admin_dashboard.php">Beranda</a>
                         </li>
+                        <!-- daftar akun -->
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
+                        <!-- <li class="nav-item px-2">
                             <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                        </li> -->
+                        <!-- dropdown kuesioner -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuisoner</a></li>
+    
+                            </ul>
+                        </li>
+                        <!-- Dropdown Akses -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UPT</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="tampilan_isi.php">Download File</a>
+                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
                         if ($username==$username1){
@@ -156,5 +176,5 @@ $username1=$_SESSION["role"];
                 window.location.href = "logout.php"; // Redirect to the logout page
             });
         </script>
-    </body>
+    </body>
 </html>

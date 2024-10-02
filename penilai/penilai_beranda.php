@@ -200,6 +200,16 @@ footer {
 </head>
 <body>
      <!--Navigasi Bar-->
+     <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Profile
+    </a>
+    <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
+        <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+    </ul>
+</li>
+
         <!--Navigasi Bar-->
         <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
             <div class="container-fluid fs-5">
@@ -271,7 +281,32 @@ footer {
         <div class="grid-item"><i class="fa-brands fa-x-twitter"></i></i>ppidkkp</div>
     </div>      
     
-    
+    <!-- Modal Konfirmasi Logout -->
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Apakah Anda yakin ingin logout?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+        window.location.href = "logout_penilai.php"; // Redirect ke halaman logout untuk menghancurkan sesi
+    });
+</script>
+
+
 
 
 

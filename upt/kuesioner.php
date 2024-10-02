@@ -1,78 +1,62 @@
 <?php
+ob_start();
 session_start();
-if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
-    exit();
-}
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
-// Cek koneksi database
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
+// Ambil data organisasi
+$sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_count = $row['total_count'];
+} else {
+    $total_count = 0; // Atau bisa menampilkan pesan error
+}
 
-// Fetch categories for dropdown
-$categorySql = "SELECT * FROM Kategori";
-$categoryResult = $conn->query($categorySql);
+$sql = "SELECT COUNT(can_fill_out) AS total_cfo FROM organisasi WHERE can_fill_out = '0'";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_cfo = $row['total_cfo'];
+} else {
+    $total_cfo = 0; // Atau bisa menampilkan pesan error
+}
 ?>
 
-<!DOCTYPE html>
+
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Kuesioner</title>
-        
-        <!-- Bootstrap CSS -->
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        
-        <!-- Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="../js/bootstrap.js"></script>
-        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
-
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                justify-content: center;
+            body{
+                user-select: none;
+                outline: black; /* Menghilangkan outline fokus */
                 margin: 20px;
+                padding: 50px;
+                overflow-x: hidden;
             }
-            label, select {
-                display: block;
-                margin-bottom: 10px;
-            }
-            input[type="radio"], input[type="text"], input[type="file"] {
-                margin-right: 10px;
-            }
-            .form-control {  width: 100%;
-                padding: 10px;
-                margin-bottom: 20px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 16px;
-                box-sizing: border-box;
-                transition: border-color 0.3s ease;
-
-            }
-            .form-control:focus {
-                border-color: #5b9bd5;
-                outline: none;
-                box-shadow: 0 0 5px rgba(91, 155, 213, 0.3);
-            }
-
-            textarea.form-control {
-                height: 150px;
-                resize: vertical;
-            }
-            select.form-control {
-                appearance: none;
-                background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140"><polygon points="0,0 70,70 140,0"/></svg>') no-repeat right 10px center;
-                background-size: 12px;
-                padding-right: 30px;
+            footer {
+                width: 100%;
+                background-color: #4535C1;
+                color: white;
+                padding: 5px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
             }
         </style>
     </head>
@@ -122,24 +106,6 @@ $categoryResult = $conn->query($categorySql);
                 </div>
             </div>
         </nav>
-
-        <!-- Spacing after navbar -->
-        <div style="margin-top: 80px;"></div>
-
-        <!-- Dropdown for selecting category -->
-        <label for="kategori">Pilih Kategori:</label>
-        <select id="kategori" name="kategori" class="form-control">
-            <option value="">Pilih Kategori</option>
-            <?php
-            if ($categoryResult->num_rows > 0) {
-                while ($categoryRow = $categoryResult->fetch_assoc()) {
-                    echo "<option value='{$categoryRow['id_kategori']}'>{$categoryRow['kategori']}</option>";
-                }
-            }
-            ?>
-        </select>
-
-        
         <!-- Modal Konfirmasi Logout -->
         <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -158,88 +124,156 @@ $categoryResult = $conn->query($categorySql);
                 </div>
             </div>
         </div>
+        
+        <!-- Kuesioner -->
+        <?php
+        $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
+        if ($conn->connect_error) {
+            die("Koneksi gagal: " . $conn->connect_error);
+        }
+        // Fetch data for display
+        $sql = "SELECT P.id_pertanyaan, P.pertanyaan, K.kategori, SK1.subkategori1, SK2.subkategori2, SK3.subkategori3, P.bobot, P.web 
+                FROM Pertanyaan P 
+                JOIN Kategori K ON P.id_kategori = K.id_kategori
+                JOIN SubKategori1 SK1 ON P.id_subkategori1 = SK1.id_subkategori1
+                JOIN SubKategori2 SK2 ON P.id_subkategori2 = SK2.id_subkategori2
+                JOIN SubKategori3 SK3 ON P.id_subkategori3 = SK3.id_subkategori3
+                ORDER BY SK1.id_subkategori1, SK2.id_subkategori2, SK3.id_subkategori3";
 
-        <!-- Container for questionnaire loaded via AJAX -->
-        <div id="questionnaireContainer"></div>
+        $result = $conn->query($sql);
 
-        <script>
-            $(document).ready(function() {
-                // Save answers to localStorage
-                function saveAnswers() {
-                    var id_kategori = $('#kategori').val();
-                    if (!id_kategori) return;
+        if ($result->num_rows > 0) {
+            echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data'>"; // Start the form
+            $last_kategori = '';
 
-                    $('#questionnaireContainer').find('input, textarea, select').each(function() {
-                        var id = $(this).attr('name') || $(this).attr('id');
-                        if (id) {
-                            if ($(this).attr('type') === 'radio') {
-                                if ($(this).is(':checked')) {
-                                    localStorage.setItem(id, $(this).val());
-                                }
-                            } else if ($(this).attr('type') === 'file') {
-                                // Skip file inputs (can't store in localStorage)
-                            } else {
-                                localStorage.setItem(id, $(this).val());
-                            }
-                        }
-                    });
-                }
+            $last_subkategori1 = '';
+            $last_subkategori2 = '';
+            $last_subkategori3 = '';
 
-                // Load answers from localStorage
-                function loadAnswers() {
-                    $('#questionnaireContainer').find('input, textarea, select').each(function() {
-                        var id = $(this).attr('name') || $(this).attr('id');
-                        if (id) {
-                            var savedValue = localStorage.getItem(id);
-                            if (savedValue !== null) {
-                                if ($(this).attr('type') === 'radio') {
-                                    if ($(this).val() === savedValue) {
-                                        $(this).prop('checked', true);
-                                    }
-                                } else {
-                                    $(this).val(savedValue);
-                                }
-                            }
-                        }
-                    });
-                }
-
-                // When category is selected
-                $('#kategori').on('change', function() {
-                    saveAnswers();
-                    var id_kategori = $(this).val();
-
-                    if (id_kategori === "") {
-                        $('#questionnaireContainer').empty();
-                        return;
+            // Output data every row
+            while ($row = $result->fetch_assoc()) {
+                // If SubKategori1 changes, create a new header
+                if ($last_kategori != $row['kategori']) {
+                    if ($last_kategori != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
                     }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style= 'background-color: #1e90ff; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['kategori']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                            $last_kategori = $row['kategori'];
 
-                    $.ajax({
-                        url: 'bankkuesioner.php',
-                        type: 'POST',
-                        data: { id_kategori: id_kategori },
-                        success: function(data) {
-                            $('#questionnaireContainer').html(data);
-                            loadAnswers();
-                        }
-                    });
-                });
+                    $last_subkategori1 = '';
+                    $last_subkategori2 = ''; // Reset SubKategori2
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+                if ($last_subkategori1 != $row['subkategori1']) {
+                    if ($last_subkategori1 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #01008a; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['subkategori1']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori1 = $row['subkategori1'];
+                    $last_subkategori2 = ''; // Reset SubKategori2
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
 
-                // Save answers when inputs change
-                $('#questionnaireContainer').on('change', 'input, textarea, select', function() {
-                    saveAnswers();
-                });
-            });
+                // If SubKategori2 changes, create a new header
+                if ($last_subkategori2 != $row['subkategori2']) {
+                    if ($last_subkategori2 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #066d1d; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['subkategori2']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori2 = $row['subkategori2'];
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
 
-            // Script untuk menangani modal dan submit form
+                // If SubKategori3 changes, create a new header
+                if ($last_subkategori3 != $row['subkategori3']) {
+                    if ($last_subkategori3 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #f9780a; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 40%;'>{$row['subkategori3']}</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Bobot</th>
+                                    <th style='padding: 10px; text-align: center; width: 30%;'>Bukti Pelaksanaan</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Jawaban</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Link</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Dokumen</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori3 = $row['subkategori3'];
+                }
+
+                // Display questions related to SubKategori3
+                echo "<tr>
+                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
+                        <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
+                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>
+                        <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                            <label style='margin-right: 15px;'>
+                            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya'> Ya
+                            </label>
+                            <label>
+                            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak'> Tidak
+                            </label>
+                        </td>
+                        <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                            <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link'>
+                        </td>
+                        <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                            <input type='file' name='dokumen[{$row['id_pertanyaan']}]'>
+                        </td>
+                      </tr>";
+            }
+            echo "</tbody></table><br>";
+            echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;'>";
+            echo "</form>";
+        } else {
+            echo "0 hasil ditemukan";
+        }
+
+        $conn->close();
+        ?>
+    <!--Footer-->
+    <footer>
+        <div class="container-fluid text-center" style="color:white;">
+            <div class="row">
+                <div class="col">
+            </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+</footer>
+
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
             document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
-                window.location.href = "logout.php"; // Redirect to the logout page
+            window.location.href = "logout.php"; // Redirect to the logout page
             });
         </script>
     </body>
-</html>
 
-<?php
-$conn->close();
-?>
+</html>

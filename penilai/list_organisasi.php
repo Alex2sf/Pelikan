@@ -144,18 +144,44 @@ $result = $stmt->get_result();
                     <thead class="table-dark">
                         <tr>
                             <th>Nama Organisasi</th>
-                            <th class="text-center">Aksi</th>
+                            <th class="text-center">Kuesioner</th>
+                            <th class="text-center">Penilaian</th>
+
+                            <th class="text-center">Verifikasi</th>
+                            <th class="text-center">Terverifikasi</th>
+
                         </tr>
                     </thead>
                     <tbody>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
-                                <td><?php echo htmlspecialchars($row['nama_organisasi']); ?></td>
-                                <td class="text-center">
-                                    <a href="penilai_dashboard.php?id_organisasi=<?php echo $row['id_organisasi']; ?>"
-                                       class="btn btn-primary">Lihat Kuesioner</a>
-                                </td>
+                            <td><?php echo htmlspecialchars($row['nama_organisasi']); ?></td>
+                                    <td class="text-center">
+                                        <!-- Tombol Lihat Kuesioner -->
+                                        <a href="penilai_dashboard.php?id_organisasi=<?php echo $row['id_organisasi']; ?>" class="btn btn-primary">
+                                            Lihat Kuesioner
+                                        </a>
+
+                                        <!-- Tombol Penilaian -->
+                                        <a href="penilaian.php?id_organisasi=<?php echo $row['id_organisasi']; ?>" class="btn btn-success" style="margin-left: 10px;">
+                                            Lakukan Penilaian
+                                        </a>
+
+    <!-- Tombol Lakukan Verifikasi -->
+    <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#verifikasiModal" data-id="<?php echo $row['id_organisasi']; ?>" data-action="verifikasi" style="margin-left: 10px;">
+        Lakukan Verifikasi
+    </button>
+
+    <!-- Tombol Batal Verifikasi -->
+    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#verifikasiModal" data-id="<?php echo $row['id_organisasi']; ?>" data-action="batal" style="margin-left: 10px;">
+        Batal Verifikasi
+    </button>
+                                    </td>
+
+
                             </tr>
+
+                            
                         <?php endwhile; ?>
                     </tbody>
                 </table>
@@ -166,9 +192,82 @@ $result = $stmt->get_result();
             </div>
         <?php endif; ?>
     </div>
+<!-- Modal Verifikasi -->
+<div class="modal fade" id="verifikasiModal" tabindex="-1" aria-labelledby="verifikasiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="verifikasiModalLabel">Konfirmasi Verifikasi</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="verifikasiMessage">Apakah Anda yakin ingin melakukan verifikasi?</p>
+                <form id="verifikasiForm">
+                    <input type="hidden" id="id_organisasi" name="id_organisasi">
+                    <input type="hidden" id="verifikasi_action" name="verifikasi_action">
+                    <button type="submit" class="btn btn-primary">Ya, Lanjutkan</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', function () {
+    var verifikasiModal = document.getElementById('verifikasiModal');
+    verifikasiModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var idOrganisasi = button.getAttribute('data-id');
+        var action = button.getAttribute('data-action');
+        var modalTitle = verifikasiModal.querySelector('.modal-title');
+        var modalMessage = document.getElementById('verifikasiMessage');
+        var inputIdOrganisasi = document.getElementById('id_organisasi');
+        var inputVerifikasiAction = document.getElementById('verifikasi_action');
+
+        inputIdOrganisasi.value = idOrganisasi;
+
+        if (action === 'verifikasi') {
+            modalTitle.textContent = 'Konfirmasi Verifikasi';
+            modalMessage.textContent = 'Apakah Anda yakin ingin melakukan verifikasi?';
+            inputVerifikasiAction.value = 'verifikasi';
+        } else {
+            modalTitle.textContent = 'Konfirmasi Batal Verifikasi';
+            modalMessage.textContent = 'Apakah Anda yakin ingin membatalkan verifikasi?';
+            inputVerifikasiAction.value = 'batal';
+        }
+    });
+
+    // Handle form submit
+    document.getElementById('verifikasiForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this);
+
+        fetch('verifikasi_handler.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Aksi berhasil!');
+                location.reload();
+            } else {
+                alert('Terjadi kesalahan saat menyimpan.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Gagal memproses permintaan.');
+        });
+    });
+});
+
+</script>
+
 </body>
 
 </html>

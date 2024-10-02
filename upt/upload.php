@@ -1,6 +1,6 @@
 <?php
 // Koneksi ke database
-$conn = new mysqli('localhost', 'root', '', 'file_system');
+$conn = new mysqli('localhost', 'root', '', 'sigh');
 
 // Periksa koneksi
 if ($conn->connect_error) {

@@ -4,20 +4,31 @@ $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $password = md5($_POST['password']); // Enkripsi MD5
+    $password = md5($_POST['password']); // Menggunakan MD5 untuk hashing password
 
-    // Cek kredensial pengguna
-    $sql = "SELECT * FROM Akun_Login WHERE username='$username' AND password='$password'";
-    $result = $conn->query($sql);
+    // Query untuk mendapatkan data akun
+    $query = "SELECT * FROM akun_login WHERE username = ? AND password = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ss", $username, $password);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $_SESSION['id_akun'] = $row['id_akun'];
+        $_SESSION['username'] = $row['username'];
         $_SESSION['role'] = $row['role'];
 
-        // Arahkan pengguna ke halaman pengisian kuesioner
-        header("Location: index.php");
-        exit();
+        // Redirect sesuai dengan role
+        if ($row['role'] == 'user') {
+            header("Location: index.php");
+            exit();
+        } elseif ($row['role'] == 'admin') {
+            header("Location: ../admin/admin_dashboard.php"); // Arahkan admin ke admin/admin_dashboard.php
+            exit();
+        } elseif ($row['role'] == 'penilai') {
+            header("Location: ../penilai/penilai_beranda.php"); // Arahkan penilai ke penilai/penilai_beranda.php
+            exit();
+        }
     } else {
         // Simpan pesan error ke session
         $_SESSION['error_message'] = "Username atau password salah";

@@ -14,7 +14,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "SELECT id_akun, role FROM Akun_Login WHERE username='$username' AND password='$password' AND role='penilai'";
     
     // Debug query
-    echo "Query: $sql<br>";
+    //echo "Query: $sql<br>";
 
     $result = $conn->query($sql);
 
@@ -30,8 +30,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         header("Location: penilai_beranda.php"); // Arahkan ke halaman dashboard penilai
         exit();
     } else {
-        echo "<p style='color: red;'>Username atau password salah.</p>";
-        echo "Tidak ada data yang cocok ditemukan di database.<br>"; // Debug: Tidak ada data
+        $error_message = "Username atau password salah.";
+        $showModal = true; // Set variabel untuk menampilkan modal
+        // echo "<p style='color: red;'>Username atau password salah.</p>";
+        // echo "Tidak ada data yang cocok ditemukan di database.<br>"; // Debug: Tidak ada data
     }
 
     // Tutup koneksi
@@ -46,6 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Penilai</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <style>
       body {
             background-image: url(img/KKP.jpg);
@@ -144,5 +148,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <input type="submit" value="Login">
         </form>
     </div>
+
+     <!-- Modal untuk pesan kesalahan -->
+     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Login Gagal</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <?php
+                    if (isset($error_message)) {
+                        echo $error_message;
+                    }
+                    ?>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script untuk menampilkan modal jika login gagal -->
+    <?php if (isset($showModal) && $showModal === true): ?>
+    <script type="text/javascript">
+        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+        errorModal.show();
+    </script>
+    <?php endif; ?>
 </body>
 </html>

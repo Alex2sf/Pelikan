@@ -5,7 +5,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "emone";  // Change this to your database name
+$dbname = "sigh";  // Change this to your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
