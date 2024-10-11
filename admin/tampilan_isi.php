@@ -1,12 +1,6 @@
 <?php
 
-
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
-
-// Cek koneksi database
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+include '../koneksi.php';
 
 // Query untuk mengambil data
 $sql = "SELECT 

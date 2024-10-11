@@ -9,7 +9,7 @@ $username="";
 $username1=$_SESSION["role"];
 
 $id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nip_responden = $_POST['nip_responden'];
     $nama_responden = $_POST['nama_responden'];
     $jabatan = $_POST['jabatan'];
+
 }
 
 // Cek apakah data sudah ada untuk id_akun ini

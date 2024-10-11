@@ -159,17 +159,30 @@
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                        <!-- dropdown kuesioner -->
+                       <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuisoner</a></li>
+    
+                            </ul>
+                        </li>
+                         <!-- Dropdown Akses -->
+                         <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
                         if ($username==$username1){

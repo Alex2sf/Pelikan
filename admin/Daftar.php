@@ -9,16 +9,8 @@ if (isset($_SESSION['username'])) {
     $username = null;  // If the user is not logged in, set username to null
 }
 // Database connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "sigh";  // Change this to your database name
+include '../koneksi.php';
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-if ($conn->connect_error) {
-  die("Connection failed: " . $conn->connect_error);
-}
 
 // Fetch all unique eselon1 with their corresponding organizations
 $sql = "SELECT DISTINCT unit_eselon1 FROM organisasi";
@@ -46,7 +38,16 @@ body {
     background-color: #f4f6f9;
     padding-top: 100px;
 }
-
+footer {
+                width: 100%;
+                background-color: #4535C1;
+                color: white;
+                padding: 10px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
+            }
 /* Heading Styling */
 h2 {
     font-size: 2.5em;
@@ -252,17 +253,31 @@ footer {
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                        <!-- dropdown kuesioner -->
+                       <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
+                            </ul>
+                        </li>
+                        <!-- Dropdown Akses -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link active" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
 
@@ -370,7 +385,20 @@ footer {
                 </div>
             </div>
         </div>
-
+ <!--Footer-->
+ <footer>
+        <div class="container-fluid text-center" style="color:white;">
+            <div class="row">
+                <div class="col">
+            </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+</footer>
   <!-- Script untuk menangani modal dan submit form -->
   <script type="text/javascript">
             document.getElementById("confirmLogoutBtn").addEventListener("click", function() {

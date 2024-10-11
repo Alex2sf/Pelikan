@@ -2,6 +2,9 @@
 session_start();
 $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $password = md5($_POST['password']); // Enkripsi MD5
@@ -17,8 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Arahkan pengguna ke halaman pengisian kuesioner
         header("Location: index.php");
+        exit();
     } else {
-        echo "<p style='color: red;'>Username atau password salah!</p>";
+        // Simpan pesan error ke session
+        $_SESSION['error_message'] = "Username atau password salah";
+        header("Location: login.php"); // Redirect untuk mencegah form resubmission
+        exit();
     }
 }
 ?>
@@ -75,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </div>
                         <div class="form-check pt-2 d-flex align-items-left">
                         </div>
-                        <button type="submit" class="btn btn-primary" value="Login" style="background-color: #36C2CE; color:black">Log in</button>
+                        <button type="submit" class="btn btn-primary" value="Login" style="background-color: #36C2CE; color: black; width: 100%;">Log in</button>
                     </form>
                     <div class="dropdown-divider"></div>
                     <a class="dropdown-item pb-4" href="index.php" id="bor">Kembali ke Beranda</a>

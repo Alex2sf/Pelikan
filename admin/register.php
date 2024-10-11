@@ -1,12 +1,12 @@
 <?php
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
 $modal_message = '';
 $modal_type = '';
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
-    $password = md5($_POST['password']); // Enkripsi MD5
+    $password = md5($_POST['password']);
     $role = $_POST['role'];
 
     // Cek apakah username sudah ada
@@ -15,61 +15,70 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     if ($result_username->num_rows > 0) {
         $modal_message = 'Username sudah terpakai. Silakan gunakan username yang lain.';
-        $modal_type = 'danger'; // Tipe modal untuk error
+        $modal_type = 'danger';
     } else {
-        // Jika tidak ada username yang sama, lanjutkan proses registrasi
-        $sql = "INSERT INTO Akun_Login (username, password, role) VALUES ('$username', '$password', '$role')";
+        try {
+            // Proses registrasi Akun_Login
+            $sql = "INSERT INTO akun_login (username, password, role) VALUES ('$username', '$password', '$role')";
+            if ($conn->query($sql) === TRUE) {
+                $id_akun = $conn->insert_id;
 
-        if ($conn->query($sql) === TRUE) {
-            $id_akun = $conn->insert_id; // Dapatkan id_akun dari akun yang baru saja didaftarkan
+                if ($role === 'penilai') {
+                    // Proses untuk Penilai
+                    $nip = $_POST['nip'] ?? null;
+                    $nama_penilai = $_POST['nama_penilai'] ?? null;
 
-            if ($role === 'penilai') {
-                $nip = $_POST['nip'] ?? null;
-                $nama_penilai = $_POST['nama_penilai'] ?? null;
+                    $check_nip = "SELECT * FROM profile_penilai WHERE nip = '$nip'";
+                    $result_nip = $conn->query($check_nip);
 
-                // Cek apakah NIP sudah ada di Profile_Penilai
-                $check_nip = "SELECT * FROM Profile_Penilai WHERE nip = '$nip'";
-                $result_nip = $conn->query($check_nip);
-
-                if ($result_nip->num_rows > 0) {
-                    $modal_message = 'NIP sudah terpakai. Silakan gunakan NIP yang lain.';
-                    $modal_type = 'danger';
-                } else {
-                    $sql_penilai = "INSERT INTO Profile_Penilai (id_akun, nip, nama_penilai) VALUES ('$id_akun', '$nip', '$nama_penilai')";
-                    if ($conn->query($sql_penilai) === TRUE) {
-                        $modal_message = 'Penilai berhasil didaftarkan!';
-                        $modal_type = 'success'; // Tipe modal untuk success
+                    if ($result_nip->num_rows > 0) {
+                        $modal_message = 'NIP sudah terpakai. Silakan gunakan NIP yang lain.';
+                        $modal_type = 'danger';
                     } else {
-                        $modal_message = 'Error: ' . $sql_penilai . "<br>" . $conn->error;
+                        $sql_penilai = "INSERT INTO profile_penilai (id_akun, nip, nama_penilai) VALUES ('$id_akun', '$nip', '$nama_penilai')";
+                        if ($conn->query($sql_penilai) === TRUE) {
+                            $modal_message = 'Penilai berhasil didaftarkan!';
+                            $modal_type = 'success';
+                        } else {
+                            $modal_message = 'Error: ' . $sql_penilai . "<br>" . $conn->error;
+                            $modal_type = 'danger';
+                        }
+                    }
+                } else {
+                    // Proses untuk User
+                    $unit_eselon1 = $_POST['unit_eselon1'] ?? null;
+                    $nama_organisasi = $_POST['nama_organisasi'] ?? null;
+                    $alamat = $_POST['alamat'] ?? null;
+                    $email_badan = $_POST['email_badan'] ?? null;
+                    $no_telp_fax = $_POST['no_telp_fax'] ?? null;
+                    $nip_responden = $_POST['nip_responden'] ?? null;
+                    $nama_responden = $_POST['nama_responden'] ?? null;
+
+                    // Pastikan SQL query terbentuk dengan benar
+                    $sql_organisasi = "INSERT INTO organisasi (id_akun, unit_eselon1, nama_organisasi, alamat, email_badan, no_telp_fax, nip_responden, nama_responden) VALUES ('$id_akun', '$unit_eselon1', '$nama_organisasi', '$alamat', '$email_badan', '$no_telp_fax', '$nip_responden', '$nama_responden')";
+
+                    if ($conn->query($sql_organisasi) === TRUE) {
+                        $modal_message = 'User berhasil didaftarkan dan Organisasi berhasil ditambahkan!';
+                        $modal_type = 'success';
+                    } else {
+                        $modal_message = 'Error: ' . $sql_organisasi . "<br>" . $conn->error;
                         $modal_type = 'danger';
                     }
                 }
             } else {
-                $unit_eselon1 = $_POST['unit_eselon1'] ?? null;
-                $nama_organisasi = $_POST['nama_organisasi'] ?? null;
-                $alamat = $_POST['alamat'] ?? null;
-                $email_badan = $_POST['email_badan'] ?? null;
-                $no_telp_fax = $_POST['no_telp_fax'] ?? null;
-                $nip_responden = $_POST['nip_responden'] ?? null;
-                $nama_responden = $_POST['nama_responden'] ?? null;
-
-                $sql_organisasi = "INSERT INTO Organisasi (id_akun, unit_eselon1, nama_organisasi, alamat, email_badan, no_telp_fax, nip_responden, nama_responden) VALUES ('$id_akun', '$unit_eselon1', '$nama_organisasi', '$alamat', '$email_badan', '$no_telp_fax', '$nip_responden', '$nama_responden')";
-
-                if ($conn->query($sql_organisasi) === TRUE) {
-                    $modal_message = 'User berhasil didaftarkan dan Organisasi berhasil ditambahkan!';
-                    $modal_type = 'success';
-                } else {
-                    $modal_message = 'Error: ' . $sql_organisasi . "<br>" . $conn->error;
-                    $modal_type = 'danger';
-                }
+                $modal_message = 'Error: ' . $sql . "<br>" . $conn->error;
+                $modal_type = 'danger';
             }
-        } else {
-            $modal_message = 'Error: ' . $sql . "<br>" . $conn->error;
+        } catch (mysqli_sql_exception $e) {
+            $modal_message = 'Error: ' . $e->getMessage();
             $modal_type = 'danger';
         }
     }
 }
+
+
 ?>
+
 
 
 <!DOCTYPE html>
@@ -194,28 +203,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <!-- Detail untuk Organisasi -->
-            <div id="organisasi-details">
-                <label>Unit Eselon 1:</label>
-                <input type="text" name="unit_eselon1">
-
-                <label>Nama Organisasi:</label>
-                <input type="text" name="nama_organisasi">
-
-                <label>Alamat:</label>
-                <input type="text" name="alamat">
-
-                <label>Email Badan:</label>
-                <input type="email" name="email_badan">
-
-                <label>No. Telp / Fax:</label>
-                <input type="text" name="no_telp_fax">
-
-                <label>NIP Responden:</label>
-                <input type="text" name="nip_responden">
-
-                <label>Nama Responden:</label>
-                <input type="text" name="nama_responden">
-            </div>
+            
 
             <input type="submit" value="Register">
         </form>
@@ -224,24 +212,51 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <!-- Modal -->
    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+     <!-- SweetAlert2 -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Modal untuk pesan sukses/error
         <?php if (!empty($modal_message)) { ?>
             Swal.fire({
-                title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                text: '<?php echo $modal_message; ?>',
-                icon: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                confirmButtonText: 'OK'
+            title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
+            text: '<?php echo $modal_message; ?>',
+            icon: '<?php echo $modal_type == "success" ? "success" : "error"; ?>',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Arahkan ke halaman beranda setelah OK diklik
+                window.location.href = 'admin_dashboard.php';
+            }
+        });
+        <?php } ?>
+
+        // Tampilkan detail form sesuai dengan role
+        document.querySelector('select[name="role"]').addEventListener('change', function() {
+            var role = this.value;
+            document.getElementById('penilai-details').style.display = role === 'penilai' ? 'block' : 'none';
+            document.getElementById('organisasi-details').style.display = role === 'user' ? 'block' : 'none';
+        });
+
+        // Modal konfirmasi sebelum submit form
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Mencegah form langsung dikirim
+
+            Swal.fire({
+                title: 'Konfirmasi',
+                text: "Apakah Anda yakin data sudah benar?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, submit!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika pengguna menekan "Yes", form akan dikirimkan
+                    this.submit();
+                }
             });
-
-            <?php } ?>
-
-// Show/hide form sections based on role selection
-document.querySelector('select[name="role"]').addEventListener('change', function() {
-    var role = this.value;
-    document.getElementById('penilai-details').style.display = role === 'penilai' ? 'block' : 'none';
-    document.getElementById('organisasi-details').style.display = role === 'user' ? 'block' : 'none';
-});
+        });
     </script>
 </body>
 </html>

@@ -8,12 +8,8 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
 $username="";
 $username1=$_SESSION["role"];
 
-// Koneksi ke database
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 // Tambahkan akses penilai ke organisasi
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_access'])) {
@@ -21,15 +17,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['add_access'])) {
     $id_organisasi = $_POST['id_organisasi'];
 
     // Cek apakah kombinasi id_penilai dan id_organisasi sudah ada di tabel Penilai_User_Access
-    $check_sql = "SELECT * FROM Penilai_User_Access WHERE id_penilai='$id_penilai' AND id_organisasi='$id_organisasi'";
+    $check_sql = "SELECT * FROM penilai_user_access WHERE id_penilai='$id_penilai' AND id_organisasi='$id_organisasi'";
     $check_result = $conn->query($check_sql);
 
     if ($check_result->num_rows == 0) {
         // Tambahkan akses jika belum ada
-        $sql = "INSERT INTO Penilai_User_Access (id_penilai, id_organisasi) VALUES ('$id_penilai', '$id_organisasi')";
+        $sql = "INSERT INTO penilai_user_access (id_penilai, id_organisasi) VALUES ('$id_penilai', '$id_organisasi')";
         if ($conn->query($sql) === TRUE) {
             // Update kolom id_penilai di tabel Organisasi jika belum ada penilai lain
-            $sql_update_organisasi = "UPDATE Organisasi SET id_penilai = '$id_penilai' WHERE id_organisasi = '$id_organisasi' AND id_penilai IS NULL";
+            $sql_update_organisasi = "UPDATE organisasi SET id_penilai = '$id_penilai' WHERE id_organisasi = '$id_organisasi' AND id_penilai IS NULL";
             if ($conn->query($sql_update_organisasi) === TRUE) {
                 echo "<script>
                     document.addEventListener('DOMContentLoaded', function() {
@@ -73,7 +69,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_access'])) {
     $id_organisasi = $_POST['id_organisasi'];
 
     // Hapus dari tabel Penilai_User_Access
-    $sql_delete = "DELETE FROM Penilai_User_Access WHERE id_penilai='$id_penilai' AND id_organisasi='$id_organisasi'";
+    $sql_delete = "DELETE FROM penilai_user_access WHERE id_penilai='$id_penilai' AND id_organisasi='$id_organisasi'";
     if ($conn->query($sql_delete) === TRUE) {
         // Periksa apakah ada akses lain untuk organisasi tersebut
         $check_other_access_sql = "SELECT * FROM Penilai_User_Access WHERE id_organisasi='$id_organisasi'";
@@ -81,7 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_access'])) {
 
         if ($check_other_access_result->num_rows == 0) {
             // Set kolom id_penilai menjadi NULL di tabel Organisasi jika tidak ada akses lain
-            $sql_update_null = "UPDATE Organisasi SET id_penilai = NULL WHERE id_organisasi = '$id_organisasi'";
+            $sql_update_null = "UPDATE organisasi SET id_penilai = NULL WHERE id_organisasi = '$id_organisasi'";
             if ($conn->query($sql_update_null) === TRUE) {
                 echo "<script>
                     document.addEventListener('DOMContentLoaded', function() {
@@ -194,7 +190,7 @@ label {
     margin-bottom: 8px;
     font-weight: bold;
     font-size: 14px;
-    color: #black;
+    color: black;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -284,17 +280,31 @@ input[type="submit"]:hover {
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" href="akses_penilai.php">Akses Penilai</a>
+                        <!-- dropdown kuesioner -->
+                       <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
+                            </ul>
+                        </li>
+                        <!-- Dropdown Akses -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
                         if ($username==$username1){
@@ -375,21 +385,22 @@ input[type="submit"]:hover {
     <!-- Success Modal -->
  <!-- Modal untuk Pesan Kesalahan dan Sukses -->
  <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Berhasil</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <!-- Pesan Sukses diisi melalui JavaScript -->
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-                </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Berhasil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Pesan Sukses diisi melalui JavaScript -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="tutupModal" data-bs-dismiss="modal">Tutup</button>
             </div>
         </div>
     </div>
+</div>
+
 
     <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -433,6 +444,13 @@ input[type="submit"]:hover {
 
 
 
+        <script>
+    // Tangkap tombol "Tutup" menggunakan ID
+    document.getElementById('tutupModal').addEventListener('click', function() {
+        // Arahkan ke halaman beranda setelah tombol "Tutup" diklik
+        window.location.href = 'admin_dashboard.php';
+    });
+</script>
 
         <!-- Script untuk menangani modal dan submit form -->
         <script type="text/javascript">

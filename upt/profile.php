@@ -9,7 +9,7 @@ $username="";
 $username1=$_SESSION["role"];
 
 $id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
@@ -177,6 +177,13 @@ $organisasi = $result->fetch_assoc();
                             <label for="inputJabatan" class="col-sm-4 col-form-label text-right">Jabatan</label>
                             <div class="col-sm-8">
                                 : <?php echo $organisasi['jabatan'] ?? '';?>
+                            </div>
+                        </div>
+
+                        <div class="form-group row d-flex align-items-center justify-content-center pb-3">
+                            <label for="inputtimezone" class="col-sm-4 col-form-label text-right">timezone</label>
+                            <div class="col-sm-8">
+                                : <?php echo $organisasi['timezone'] ?? '';?>
                             </div>
                         </div>
                     </form>                    

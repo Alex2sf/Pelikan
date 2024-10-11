@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
+    header("Location: login_new.php");
     exit();
 }
 
@@ -9,7 +9,7 @@ $username="";
 $username1=$_SESSION["role"];
 
 $id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
@@ -93,7 +93,7 @@ $organisasi = $result->fetch_assoc();
                         <?php
                         if ($username==$username1){
                             echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
+                            <a class="nav-link black" href="login_new.php">Login</a>
                             </li>';
                         }else{
                             echo '<li class="nav-item dropdown">
@@ -119,13 +119,23 @@ $organisasi = $result->fetch_assoc();
                 <div class="col-12 col-md-8 pt-2 position-relative mx-auto" style="background-color: white; border-radius: 40px; padding-bottom:25px; opacity:0.8">
                     <h2 class="text-center" style="color:black; padding-top:10px;">Profile Organisasi</h2>
                     <form id="organisasiForm" action="update_organisasi.php" method="post" style="max-width: 600px; margin: 0 auto;">
-                        <div class="form-group row d-flex align-items-center justify-content-center pt-2">
-                            <label for="inputName2" class="col-sm-4 col-form-label text-right">Unit Eselon 1</label>
-                            <div class="col-sm-8">
-                                <input type="text" class="form-control form-control-wide" name="unit_eselon1" value="<?php echo $organisasi['unit_eselon1'] ?? ''; ?>" required>
-                            </div>
-                        </div>
-                    
+                    <div class="form-group row d-flex align-items-center justify-content-center pt-2">
+    <label for="inputName2" class="col-sm-4 col-form-label text-right">Unit Eselon 1</label>
+    <div class="col-sm-8">
+        <select class="form-control form-control-wide" name="unit_eselon1" required>
+            <option value="" disabled selected>Pilih Unit Eselon 1</option>
+            <option value="Sekretariat Jenderal" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Sekretariat Jenderal') ? 'selected' : ''; ?>>Sekretariat Jenderal</option>
+            <option value="Direktorat Jenderal Pengelolaan Kelautan dan Ruang Laut" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Direktorat Jenderal Pengelolaan Kelautan dan Ruang Laut') ? 'selected' : ''; ?>>Direktorat Jenderal Pengelolaan Kelautan dan Ruang Laut</option>
+            <option value="Direktorat Jenderal Perikanan Tangkap" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Direktorat Jenderal Perikanan Tangkap') ? 'selected' : ''; ?>>Direktorat Jenderal Perikanan Tangkap</option>
+            <option value="Direktorat Jenderal Perikanan Budi Daya" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Direktorat Jenderal Perikanan Budi Daya') ? 'selected' : ''; ?>>Direktorat Jenderal Perikanan Budi Daya</option>
+            <option value="Direktorat Jenderal Penguatan Daya Saing Produk Kelautan dan Perikanan" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Direktorat Jenderal Penguatan Daya Saing Produk Kelautan dan Perikanan') ? 'selected' : ''; ?>>Direktorat Jenderal Penguatan Daya Saing Produk Kelautan dan Perikanan</option>
+            <option value="Direktorat Jenderal Pengawasan Sumber Daya Kelautan dan Perikanan" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Direktorat Jenderal Pengawasan Sumber Daya Kelautan dan Perikanan') ? 'selected' : ''; ?>>Direktorat Jenderal Pengawasan Sumber Daya Kelautan dan Perikanan</option>
+            <option value="Inspektorat Jenderal" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Inspektorat Jenderal') ? 'selected' : ''; ?>>Inspektorat Jenderal</option>
+            <option value="Badan Penyuluhan dan Pengembangan Sumber Daya Manusia Kelautan dan Perikanan" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Badan Penyuluhan dan Pengembangan Sumber Daya Manusia Kelautan dan Perikanan') ? 'selected' : ''; ?>>Badan Penyuluhan dan Pengembangan Sumber Daya Manusia Kelautan dan Perikanan</option>
+            <option value="Badan Pengendalian dan Pengawasan Mutu Hasil Kelautan dan Perikanan" <?php echo (isset($organisasi['unit_eselon1']) && $organisasi['unit_eselon1'] == 'Badan Pengendalian dan Pengawasan Mutu Hasil Kelautan dan Perikanan') ? 'selected' : ''; ?>>Badan Pengendalian dan Pengawasan Mutu Hasil Kelautan dan Perikanan</option>
+        </select>
+    </div>
+</div>
                         <div class="form-group row d-flex align-items-center justify-content-center">
                             <label for="inputName2" class="col-sm-4 col-form-label text-right">Nama Organisasi</label>
                             <div class="col-sm-8">
@@ -173,6 +183,16 @@ $organisasi = $result->fetch_assoc();
                             <div class="col-sm-8">
                                 <input type="text" class="form-control form-control-wide" id="inputJabatan" name="jabatan" value="<?php echo $organisasi['jabatan'] ?? ''; ?>" required>
                             </div>
+                        </div>
+                        <div class="form-group row d-flex align-items-center justify-content-center">
+                            <label for="inputtimezone" class="col-sm-4 col-form-label text-right">TimeZone</label>
+                            <div class="col-sm-8">
+                            <select name="timezone" class="form-control">
+                                <option>WIB</option>
+                                <option>WIT</option>
+                                <option>WITA</option>
+                            </select> 
+                        </div>
                         </div>
                     
                         <div class="form-group row d-flex align-items-center justify-content-center pt-4">

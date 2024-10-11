@@ -4,11 +4,12 @@ session_start();
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
+
 // Ambil data organisasi
 $sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
 $result = $conn->query($sql);
@@ -67,7 +68,7 @@ if ($result) {
                             <a class="nav-link black" href="peringkat.php">Peringkat</a>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="kuesioner.php">Kuesioner</a>
+                            <a class="nav-link black" href="kuesioner_valid.php">Kuesioner</a>
                         </li>
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="alur.php">Alur</a>
@@ -75,7 +76,7 @@ if ($result) {
                         <?php
                         if ($username==$username1){
                             echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
+                            <a class="nav-link black" href="../login_new.php">Login</a>
                             </li>';
                         }else{
                             echo '<li class="nav-item dropdown">
@@ -270,7 +271,7 @@ if ($result) {
 
 
         <!--Footer-->
-        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
+        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:10px">
             <div class="row">
                 <div class="col">
                 </div>  

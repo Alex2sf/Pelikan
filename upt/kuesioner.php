@@ -1,78 +1,141 @@
 <?php
+ob_start();
 session_start();
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
+    header("Location: login_new.php");
     exit();
 }
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
-// Cek koneksi database
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
 
-// Fetch categories for dropdown
-$categorySql = "SELECT * FROM Kategori";
-$categoryResult = $conn->query($categorySql);
-?>
+// Ambil ID akun dari sesi
+$id_akun = $_SESSION['id_akun'];
 
-<!DOCTYPE html>
+// Query untuk memeriksa apakah user memiliki penilai
+$sql = "SELECT o.id_penilai FROM organisasi o JOIN akun_login a ON o.id_akun = a.id_akun WHERE a.id_akun = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_akun);
+$stmt->execute();
+$result = $stmt->get_result();
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $id_penilai = $row['id_penilai'];
+
+    if ($id_penilai) {
+        // User memiliki penilai, tampilkan form kuesioner
+        // Kode untuk menampilkan form kuesioner
+    } else {
+        echo "Anda tidak memiliki penilai, sehingga tidak bisa mengisi kuesioner ini.";
+        exit(); // Hentikan eksekusi jika tidak memiliki penilai
+    }
+} else {
+    header("Location: ../login_new.php");
+    echo "Data organisasi tidak ditemukan.";
+    exit(); // Hentikan eksekusi jika data organisasi tidak ada
+}
+
+// Ambil data organisasi
+$sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_count = $row['total_count'];
+} else {
+    $total_count = 0; // Atau bisa menampilkan pesan error
+}
+
+$sql = "SELECT COUNT(can_fill_out) AS total_cfo FROM organisasi WHERE can_fill_out = '0'";
+$result = $conn->query($sql);
+if ($result) {
+    $row = $result->fetch_assoc();
+    $total_cfo = $row['total_cfo'];
+} else {
+    $total_cfo = 0; // Atau bisa menampilkan pesan error
+}
+
+$id_organisasi = $_SESSION['id_organisasi'];
+
+?>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Kuesioner</title>
-        
-        <!-- Bootstrap CSS -->
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-        
-        <!-- Bootstrap JS -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script type="text/javascript" src="../js/bootstrap.js"></script>
-        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
-
         <style>
-            body {
-                font-family: Arial, sans-serif;
-                justify-content: center;
+            body{
+                outline: black; /* Menghilangkan outline fokus */
                 margin: 20px;
+                padding: 50px;
+                overflow-x: hidden;
             }
-            label, select {
-                display: block;
-                margin-bottom: 10px;
+            footer {
+                width: 100%;
+                background-color: #4535C1;
+                color: white;
+                padding: 5px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
             }
-            input[type="radio"], input[type="text"], input[type="file"] {
-                margin-right: 10px;
+                /* Gaya untuk input link */
+            input[type="text"] {
+                padding: 5px;
+                width: 150px;
+                border: 2px solid #007BFF;
+                border-radius: 50px;
+                transition: 0.3s ease;
+                text-align: center;
             }
-            .form-control {  width: 100%;
+
+            input[type="text"]:focus, input[type="text"]:valid {
+                box-shadow: 0 0 1px rgba(0, 91, 234, 0.2);
+            }
+            table th, table td {
                 padding: 10px;
-                margin-bottom: 20px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                font-size: 16px;
-                box-sizing: border-box;
-                transition: border-color 0.3s ease;
-
+                text-align: center; /* Menyelaraskan konten secara horizontal ke tengah */
+                vertical-align: middle; /* Menyelaraskan konten secara vertikal ke tengah */
+                border-bottom: 1px solid #ddd;
             }
-            .form-control:focus {
-                border-color: #5b9bd5;
+
+            table td input[type="radio"],
+            table td input[type="text"],
+            table td input[type="file"] {
+                margin: 0 auto; /* Membuat elemen berada di tengah */
+                display: block; /* Memastikan elemen berbentuk blok untuk posisi */
+            }
+            .upload-box {
+                font-size: 5 px;
+                background: white;
+                border-radius: 50px;
+                box-shadow: 0px 0px 5px black;
+                width: 350px;
+                outline:none;
+            }
+            ::-webkit-file-upload-button{
+                color: white;
+                background: #206a5d;
+                padding:5px;
+                border:none;
+                border-radius:20px;
+                box-shadow: 1px 0 1px 1px #6b4559;
                 outline: none;
-                box-shadow: 0 0 5px rgba(91, 155, 213, 0.3);
             }
-
-            textarea.form-control {
-                height: 150px;
-                resize: vertical;
-            }
-            select.form-control {
-                appearance: none;
-                background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 140"><polygon points="0,0 70,70 140,0"/></svg>') no-repeat right 10px center;
-                background-size: 12px;
-                padding-right: 30px;
+            ::-webkit-file-upload-button:hover{
+                background: #438a5e;
+                cursor: pointer;
             }
         </style>
     </head>
@@ -123,25 +186,187 @@ $categoryResult = $conn->query($categorySql);
             </div>
         </nav>
 
-        <!-- Spacing after navbar -->
-        <div style="margin-top: 80px;"></div>
+  
+        
+        <!-- Kuesioner -->
+        <?php
+        $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
-        <!-- Dropdown for selecting category -->
-        <label for="kategori">Pilih Kategori:</label>
-        <select id="kategori" name="kategori" class="form-control">
-            <option value="">Pilih Kategori</option>
-            <?php
-            if ($categoryResult->num_rows > 0) {
-                while ($categoryRow = $categoryResult->fetch_assoc()) {
-                    echo "<option value='{$categoryRow['id_kategori']}'>{$categoryRow['kategori']}</option>";
+        if ($conn->connect_error) {
+            die("Koneksi gagal: " . $conn->connect_error);
+        }
+        // Fetch data for display
+        $sql = "SELECT P.id_pertanyaan, P.pertanyaan, K.kategori, SK1.subkategori1, SK2.subkategori2, SK3.subkategori3, P.bobot, P.web 
+                FROM Pertanyaan P 
+                JOIN Kategori K ON P.id_kategori = K.id_kategori
+                JOIN SubKategori1 SK1 ON P.id_subkategori1 = SK1.id_subkategori1
+                JOIN SubKategori2 SK2 ON P.id_subkategori2 = SK2.id_subkategori2
+                JOIN SubKategori3 SK3 ON P.id_subkategori3 = SK3.id_subkategori3
+                ORDER BY SK1.id_subkategori1, SK2.id_subkategori2, SK3.id_subkategori3";
+
+        $result = $conn->query($sql);
+
+        $sqlJawaban = "SELECT * FROM kuesioner WHERE id_organisasi = $id_organisasi";
+                $resultJawaban = $conn->query($sqlJawaban);
+
+        if ($result->num_rows > 0) {
+            echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data'>"; // Start the form
+            $last_kategori = '';
+
+            $last_subkategori1 = '';
+            $last_subkategori2 = '';
+            $last_subkategori3 = '';
+
+            // Output data every row
+            while ($row = $result->fetch_assoc()) {
+                // If SubKategori1 changes, create a new header
+                if ($last_kategori != $row['kategori']) {
+                    if ($last_kategori != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style= 'background-color: #1e90ff; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['kategori']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                            $last_kategori = $row['kategori'];
+
+                    $last_subkategori1 = '';
+                    $last_subkategori2 = ''; // Reset SubKategori2
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+                if ($last_subkategori1 != $row['subkategori1']) {
+                    if ($last_subkategori1 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #01008a; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['subkategori1']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori1 = $row['subkategori1'];
+                    $last_subkategori2 = ''; // Reset SubKategori2
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+
+                // If SubKategori2 changes, create a new header
+                if ($last_subkategori2 != $row['subkategori2']) {
+                    if ($last_subkategori2 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #066d1d; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 60%;'>{$row['subkategori2']}</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori2 = $row['subkategori2'];
+                    $last_subkategori3 = ''; // Reset SubKategori3
+                }
+
+                // If SubKategori3 changes, create a new header
+                if ($last_subkategori3 != $row['subkategori3']) {
+                    if ($last_subkategori3 != '') {
+                        echo "</tbody></table><br>"; // Close previous table if any
+                    }
+                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;' >
+                            <thead>
+                                <tr style='background-color: #f9780a; color: white;'>
+                                    <th style='padding: 10px; text-align: center; width: 40%;'>{$row['subkategori3']}</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Bobot</th>
+                                    <th style='padding: 10px; text-align: center; width: 30%;'>Bukti Pelaksanaan</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Jawaban</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Link</th>
+                                    <th style='padding: 10px; text-align: center; width: 10%;'>Dokumen</th>
+                                </tr>
+                            </thead>
+                            <tbody>";
+                    $last_subkategori3 = $row['subkategori3'];
+                }
+
+                $jawaban = mysqli_fetch_assoc($resultJawaban);
+
+                // Display questions related to SubKategori3
+                echo "<tr>
+    <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
+    <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
+    <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>
+    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+        <label style='margin-right: 15px;'>
+            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya' " . ($jawaban['jawaban'] === 'Ya' && $jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? 'checked="true"' : '') . "> Ya
+        </label>
+        <label>
+            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak' ". ($jawaban['jawaban'] === 'Tidak' && $jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? 'checked="true"' : '') . "> Tidak
+        </label>
+    </td>
+    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+        <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' value=" . ($jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? $jawaban['link'] : '') . ">
+    </td>
+    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+        <input type='file' class='upload-box' name='dokumen[{$row['id_pertanyaan']}]' accept='application/pdf' value=" . ($jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? $jawaban['dokumen'] : '') . ">
+
+    </td>
+</tr>";
+
+            }
+            echo "</tbody></table><br>";
+            echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";            echo "</form>";
+        } else {
+            echo "0 hasil ditemukan";
+        }
+        echo "<script>
+        function validateFileSize(input) {
+            const maxFileSize = 10 * 1024 * 1024; // 10MB dalam byte
+            const file = input.files[0];
+    
+            if (file && file.size > maxFileSize) {
+                alert('File yang Anda unggah melebihi batas ukuran 10MB. Silakan unggah file yang lebih kecil.');
+                input.value = ''; // Reset input file jika ukuran melebihi batas
+            }
+        }
+    
+        // Alternatif: Validasi seluruh form sebelum submit
+        document.getElementById('kuesionerForm').addEventListener('submit', function (event) {
+            const fileInputs = document.querySelectorAll('.upload-box');
+            const maxFileSize = 10 * 1024 * 1024; // 10MB dalam byte
+    
+            for (const input of fileInputs) {
+                if (input.files.length > 0 && input.files[0].size > maxFileSize) {
+                    alert('File yang Anda unggah melebihi batas ukuran 10MB. Silakan unggah file yang lebih kecil.');
+                    event.preventDefault(); // Mencegah pengiriman form
+                    return false;
                 }
             }
-            ?>
-        </select>
+        });
 
-        
-        <!-- Modal Konfirmasi Logout -->
-        <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+        function toggleInputs(radio) {
+    // Dapatkan elemen input file dan link terkait
+    const row = radio.closest('tr');
+    const linkInput = row.querySelector('.link-input');
+    const fileInput = row.querySelector('.file-input');
+
+    // Jika 'Tidak' dipilih, nonaktifkan input link dan file
+    if (radio.value === 'Tidak') {
+        linkInput.disabled = true; // Nonaktifkan input link
+        linkInput.value = ''; // Reset nilai input link
+        fileInput.disabled = true; // Nonaktifkan input file
+        fileInput.value = ''; // Reset nilai input file
+    } else {
+        linkInput.disabled = false; // Aktifkan input link
+        fileInput.disabled = false; // Aktifkan input file
+    }
+}
+    </script>";
+    
+        $conn->close();
+        ?>
+              <!-- Modal Konfirmasi Logout -->
+              <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -158,88 +383,27 @@ $categoryResult = $conn->query($categorySql);
                 </div>
             </div>
         </div>
+    <!--Footer-->
+    <footer>
+        <div class="container-fluid text-center" style="color:white;">
+            <div class="row">
+                <div class="col">
+            </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+</footer>
 
-
-        <!-- Container for questionnaire loaded via AJAX -->
-        <div id="questionnaireContainer"></div>
-
-        <script>
-            $(document).ready(function() {
-                // Save answers to localStorage
-                function saveAnswers() {
-                    var id_kategori = $('#kategori').val();
-                    if (!id_kategori) return;
-
-                    $('#questionnaireContainer').find('input, textarea, select').each(function() {
-                        var id = $(this).attr('name') || $(this).attr('id');
-                        if (id) {
-                            if ($(this).attr('type') === 'radio') {
-                                if ($(this).is(':checked')) {
-                                    localStorage.setItem(id, $(this).val());
-                                }
-                            } else if ($(this).attr('type') === 'file') {
-                                // Skip file inputs (can't store in localStorage)
-                            } else {
-                                localStorage.setItem(id, $(this).val());
-                            }
-                        }
-                    });
-                }
-
-                // Load answers from localStorage
-                function loadAnswers() {
-                    $('#questionnaireContainer').find('input, textarea, select').each(function() {
-                        var id = $(this).attr('name') || $(this).attr('id');
-                        if (id) {
-                            var savedValue = localStorage.getItem(id);
-                            if (savedValue !== null) {
-                                if ($(this).attr('type') === 'radio') {
-                                    if ($(this).val() === savedValue) {
-                                        $(this).prop('checked', true);
-                                    }
-                                } else {
-                                    $(this).val(savedValue);
-                                }
-                            }
-                        }
-                    });
-                }
-
-                // When category is selected
-                $('#kategori').on('change', function() {
-                    saveAnswers();
-                    var id_kategori = $(this).val();
-
-                    if (id_kategori === "") {
-                        $('#questionnaireContainer').empty();
-                        return;
-                    }
-
-                    $.ajax({
-                        url: 'bankkuesioner.php',
-                        type: 'POST',
-                        data: { id_kategori: id_kategori },
-                        success: function(data) {
-                            $('#questionnaireContainer').html(data);
-                            loadAnswers();
-                        }
-                    });
-                });
-
-                // Save answers when inputs change
-                $('#questionnaireContainer').on('change', 'input, textarea, select', function() {
-                    saveAnswers();
-                });
-            });
-
-            // Script untuk menangani modal dan submit form
+        <!-- Script untuk menangani modal dan submit form -->
+        <script type="text/javascript">
             document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
-                window.location.href = "logout.php"; // Redirect to the logout page
+            window.location.href = "logout.php"; // Redirect to the logout page
             });
         </script>
     </body>
-</html>
 
-<?php
-$conn->close();
-?>
+</html>

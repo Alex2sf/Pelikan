@@ -5,11 +5,8 @@
 //     exit();
 // }
 
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 // Mengambil semua akun untuk ditampilkan di dropdown
 $sql = "SELECT id_akun, username FROM Akun_Login";
@@ -30,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Cek apakah password baru dan konfirmasi password sama
     if ($password_baru == $konfirmasi_password) {
         // Update password di database
-        $sql_update = "UPDATE Akun_Login SET password='$password_baru' WHERE id_akun='$id_akun'";
+        $sql_update = "UPDATE akun_login SET password='$password_baru' WHERE id_akun='$id_akun'";
         if ($conn->query($sql_update) === TRUE) {
             echo "<p style='color: green;'>Password berhasil diubah untuk akun ID: $id_akun.</p>";
         } else {

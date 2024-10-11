@@ -1,9 +1,7 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error); // Tampilkan pesan jika koneksi gagal
-}
+include '../koneksi.php';
+
 // Periksa apakah pengguna sudah login dan memiliki peran penilai
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     header("Location: login.php");  // Redirect jika tidak login atau bukan penilai

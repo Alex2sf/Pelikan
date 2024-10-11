@@ -1,37 +1,34 @@
 <?php
+ob_start();
+include '../koneksi.php';
+
 session_start();
-
-$username="";
-$username1=$_SESSION["role"];
-
-if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
-    header("Location: admin_login.php");
-    exit();
+if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
+    die('Access denied. Only admins can access this page.');
 }
+$username = "";
+$username1 = $_SESSION["role"];
+$modal_message = "";
+$modal_type = "";
 
-// Koneksi ke database
-$conn = new mysqli('localhost', 'root', '', 'emone'); // Sesuaikan dengan kredensial database Anda
-
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
-
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['id_organisasi'])) {
+// Proses Grant Access
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['id_organisasi'])) {
     $id_organisasi = $_POST['id_organisasi'];
-
-    // Beri akses ulang kepada user dengan mengubah status_kuesioner menjadi 1
-    $sql = "UPDATE Organisasi SET status_kuesioner = 1 WHERE id_organisasi = '$id_organisasi'";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Akses ulang diberikan untuk organisasi ID: $id_organisasi";
+    
+    // Update can_fill_out menjadi TRUE
+    $update_query = $conn->prepare("UPDATE organisasi SET can_fill_out = TRUE WHERE id_organisasi = ?");
+    $update_query->bind_param('i', $id_organisasi);
+    if ($update_query->execute()) {
+        $modal_message = "Access granted. User can now retake the questionnaire.";
+        $modal_type = "success";
     } else {
-        echo "Error: " . $sql . "<br>" . $conn->error;
+        $modal_message = "Failed to grant access.";
+        $modal_type = "error";
     }
 }
 
-// Ambil daftar organisasi
-$sql = "SELECT id_organisasi, nama_organisasi FROM Organisasi";
-$result = $conn->query($sql);
+// Ambil data users dan status mereka
+$users_query = $conn->query("SELECT id_organisasi, nama_organisasi, can_fill_out FROM organisasi");
 ?>
 
 <!DOCTYPE html>
@@ -58,7 +55,16 @@ body {
     margin-top: 120px;
     padding: 0;
 }
-
+footer {
+                width: 100%;
+                background-color: #4535C1;
+                color: white;
+                padding: 10px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
+            }
 .container {
     width: 100%;
     max-width: 1200px;
@@ -69,7 +75,7 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-h2 {
+h2,h1 {
     text-align: center;
     margin-bottom: 20px;
     font-size: 24px;
@@ -97,6 +103,65 @@ select {
     background-color: #fff;
     font-size: 16px;
     color: #333;
+}
+
+table {
+    width: 90%; /* Atur lebar tabel menjadi 90% dari kontainer */
+    border-collapse: collapse;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    text-align: left;
+    transition: all 0.3s ease;
+    margin-left: auto;
+    margin-right: auto; /* Mengatur agar tabel berada di tengah dengan jarak seimbang */
+}
+
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Header Styling */
+th {
+    background-color: #4535C1;
+    color: white;
+}
+
+thead {
+    background-color: #4535C1;
+    color: white;
+    font-weight: bold;
+}
+
+/* Alternating Row Colors */
+tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Hover Effect: Glowing & More Light */
+
+
+/* Hover Effect on Table Data */
+
+
+td:first-child {
+    color: #000000;
+}
+
+td a {
+    color: #4535C1;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+td a:hover {
+    color: #2e24a3;
 }
 
 input[type="text"],
@@ -159,10 +224,9 @@ input[type="submit"]:hover {
 }
 
     </style>
-
 </head>
-<body>
 
+<body>
 <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
             <div class="container-fluid fs-5">
                 <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
@@ -180,17 +244,31 @@ input[type="submit"]:hover {
                         <li class="nav-item px-2">
                             <a class="nav-link black" href="register.php">Daftar Akun</a>
                         </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
+                       <!-- dropdown kuesioner -->
+                       <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Kuesioner
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
+                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
+                            </ul>
+                        </li>
+                        <!-- Dropdown Akses -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Akses
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
+                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+    
+                            </ul>
                         </li>
                         <li class="nav-item px-2">
-                            <a class="nav-link black" href="add_data.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" href="admin_akses.php">Akses UPT</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">Daftar Upt</a>
+                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
                         </li>
                         <?php
                         if ($username==$username1){
@@ -213,48 +291,34 @@ input[type="submit"]:hover {
                 </div>
             </div>
         </nav>
+    <h1>Grant Questionnaire Access</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Organisasi</th>
+                <th>Status Pengisian</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php while ($user = $users_query->fetch_assoc()): ?>
+        <tr>
+            <td><?php echo htmlspecialchars($user['nama_organisasi']); ?></td>
+            <td><?php echo $user['can_fill_out'] ? 'Dapat Mengisi' : 'Tidak Dapat Mengisi'; ?></td>
+            <td>
+                <?php if (!$user['can_fill_out']): ?>
+                <form method="POST" action="">
+                    <input type="hidden" name="id_organisasi" value="<?php echo $user['id_organisasi']; ?>">
+                    <input type="submit" value="Grant Access">
+                </form>
+                <?php endif; ?>
+            </td>
+        </tr>
+    <?php endwhile; ?>
+        </tbody>
+    </table>
 
-    <div class="container">
-        <h2>Berikan Akses Ulang untuk Kuesioner</h2>
-        <form method="post" action="admin_akses.php">
-            <label for="id_organisasi">Pilih Organisasi:</label>
-            <select name="id_organisasi" id="id_organisasi">
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <option value="<?php echo $row['id_organisasi']; ?>">
-                        <?php echo htmlspecialchars($row['nama_organisasi']); ?>
-                    </option>
-                <?php endwhile; ?>
-            </select>
-            <input type="submit" value="Beri Akses Ulang">
-        </form>
-
-        <!-- Tombol Balik -->
-        <button class="btn-balik" onclick="window.location.href='admin_dashboard.php'">Kembali ke Beranda</button>
-    </div>
-        <!-- Modal -->
-   <!-- SweetAlert2 -->
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        <?php if (!empty($modal_message)) { ?>
-            Swal.fire({
-                title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                text: '<?php echo $modal_message; ?>',
-                icon: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                confirmButtonText: 'OK'
-            });
-
-            <?php } ?>
-
-// Show/hide form sections based on role selection
-document.querySelector('select[name="role"]').addEventListener('change', function() {
-    var role = this.value;
-    document.getElementById('penilai-details').style.display = role === 'penilai' ? 'block' : 'none';
-    document.getElementById('organisasi-details').style.display = role === 'user' ? 'block' : 'none';
-});
-    </script>
-
-
-<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+    <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -271,14 +335,47 @@ document.querySelector('select[name="role"]').addEventListener('change', functio
                 </div>
             </div>
         </div>
-
-
-
-        <!-- Script untuk menangani modal dan submit form -->
-        <script type="text/javascript">
+ <!--Footer-->
+ <footer>
+        <div class="container-fluid text-center" style="color:white;">
+            <div class="row">
+                <div class="col">
+            </div>  
+                <div class="col-8">
+                    ©2024 <a style="text-decoration: none; color:aquamarine">Kementerian Kelautan dan Perikanan</a>. All Rights Reserved
+                </div>
+                <div class="col">
+                </div>
+            </div>
+        </div>
+</footer>
+  <!-- Script untuk menangani modal dan submit form -->
+  <script type="text/javascript">
             document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
                 window.location.href = "logout.php"; // Redirect to the logout page
             });
         </script>
+
+<?php if (!empty($modal_message)) { ?>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script>
+        Swal.fire({
+            title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
+            text: '<?php echo $modal_message; ?>',
+            icon: '<?php echo $modal_type == "success" ? "success" : "error"; ?>',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Arahkan ke halaman beranda setelah OK diklik
+                window.location.href = 'admin_dashboard.php';
+            }
+        });
+    </script>
+<?php } ?>
+
 </body>
 </html>
+
+<?php
+$conn->close();
+?>

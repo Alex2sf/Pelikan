@@ -1,7 +1,7 @@
 <?php
 session_start();
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
+    header("Location: login_new.php");
     exit();
 }
 $username="";
@@ -28,8 +28,8 @@ $username1=$_SESSION["role"];
         <!--Navigasi Bar-->
         <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
             <div class="container-fluid fs-5">
-            <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
+                <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
                 </a>
                 <div>Pelikan</div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -229,7 +229,7 @@ $username1=$_SESSION["role"];
 
 
         <!--Footer-->
-        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:20px">
+        <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:10px">
             <div class="row">
                 <div class="col">
                 </div>  
