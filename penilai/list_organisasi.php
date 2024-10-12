@@ -122,7 +122,6 @@ $result = $stmt->get_result();
                     <tr>
                         <th>Nama Organisasi</th>
                         <th class="text-center">Lihat Kuesioner</th>
-                        <th class="text-center">Penilaian</th>
                         <th class="text-center">Verifikasi</th>
                         <th class="text-center">Batalkan</th>
                     </tr>
@@ -135,9 +134,7 @@ $result = $stmt->get_result();
                             <td class="text-center"><a href="penilai_dashboard.php?id_organisasi=<?php echo $row['id_organisasi']; ?>" class="btn btn-primary">
                                     Lihat Kuesioner
                                 </a></td>
-                            <!-- Tombol Penilaian -->
-                            <td class="text-center"><a href="penilaian.php?id_organisasi=<?php echo $row['id_organisasi']; ?>" class="btn btn-success" style="margin-left: 10px;">
-                            Lakukan Penilaian</a></td>
+                      
                             <!-- Tombol Lakukan Verifikasi -->
                             <td class="text-center"><button class="btn btn-warning" 
                                         data-bs-toggle="modal" 

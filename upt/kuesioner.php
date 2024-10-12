@@ -2,7 +2,7 @@
 ob_start();
 session_start();
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login_new.php");
+    header("Location: login.php");
     exit();
 }
 $username="";
@@ -13,34 +13,6 @@ $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial 
 if ($conn->connect_error) {
     die("Koneksi gagal: " . $conn->connect_error);
 }
-
-// Ambil ID akun dari sesi
-$id_akun = $_SESSION['id_akun'];
-
-// Query untuk memeriksa apakah user memiliki penilai
-$sql = "SELECT o.id_penilai FROM organisasi o JOIN akun_login a ON o.id_akun = a.id_akun WHERE a.id_akun = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $id_akun);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $id_penilai = $row['id_penilai'];
-
-    if ($id_penilai) {
-        // User memiliki penilai, tampilkan form kuesioner
-        // Kode untuk menampilkan form kuesioner
-    } else {
-        echo "Anda tidak memiliki penilai, sehingga tidak bisa mengisi kuesioner ini.";
-        exit(); // Hentikan eksekusi jika tidak memiliki penilai
-    }
-} else {
-    header("Location: ../login_new.php");
-    echo "Data organisasi tidak ditemukan.";
-    exit(); // Hentikan eksekusi jika data organisasi tidak ada
-}
-
 // Ambil data organisasi
 $sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
 $result = $conn->query($sql);
@@ -60,8 +32,6 @@ if ($result) {
     $total_cfo = 0; // Atau bisa menampilkan pesan error
 }
 
-$id_organisasi = $_SESSION['id_organisasi'];
-
 ?>
 <html lang="en">
     <head>
@@ -75,6 +45,7 @@ $id_organisasi = $_SESSION['id_organisasi'];
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
         <style>
             body{
+                user-select: ;
                 outline: black; /* Menghilangkan outline fokus */
                 margin: 20px;
                 padding: 50px;
@@ -206,9 +177,6 @@ $id_organisasi = $_SESSION['id_organisasi'];
 
         $result = $conn->query($sql);
 
-        $sqlJawaban = "SELECT * FROM kuesioner WHERE id_organisasi = $id_organisasi";
-                $resultJawaban = $conn->query($sqlJawaban);
-
         if ($result->num_rows > 0) {
             echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data'>"; // Start the form
             $last_kategori = '';
@@ -289,37 +257,42 @@ $id_organisasi = $_SESSION['id_organisasi'];
                     $last_subkategori3 = $row['subkategori3'];
                 }
 
-                $jawaban = mysqli_fetch_assoc($resultJawaban);
-
                 // Display questions related to SubKategori3
                 echo "<tr>
-    <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
-    <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
-    <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>
-    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-        <label style='margin-right: 15px;'>
-            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya' " . ($jawaban['jawaban'] === 'Ya' && $jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? 'checked="true"' : '') . "> Ya
-        </label>
-        <label>
-            <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak' ". ($jawaban['jawaban'] === 'Tidak' && $jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? 'checked="true"' : '') . "> Tidak
-        </label>
-    </td>
-    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-        <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' value=" . ($jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? $jawaban['link'] : '') . ">
-    </td>
-    <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-        <input type='file' class='upload-box' name='dokumen[{$row['id_pertanyaan']}]' accept='application/pdf' value=" . ($jawaban['id_pertanyaan'] === $row['id_pertanyaan'] ? $jawaban['dokumen'] : '') . ">
+                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
+                        <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
+                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'><a href='{$row['web']}' target='_blank' style='color: #007BFF;'>{$row['web']}</a></td>";
+        // Tampilkan elemen hanya jika bobot tidak null
+        if (!is_null($row['bobot'])) {
+            echo "<td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                    <label style='margin-right: 15px;'>
+                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya' onchange='toggleInputs(this)'> Ya
+                    </label>
+                    <label>
+                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak' onchange='toggleInputs(this)'> Tidak
+                    </label>
+                </td>
+                <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                    <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' class='link-input'>
+                </td>
+                <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                    <input type='file' class='upload-box file-input' name='dokumen[{$row['id_pertanyaan']}]' accept='application/pdf' >
+                </td>";
+        } else {
+            echo "<td colspan='3' style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>Tidak ada isian diperlukan</td>";
+        }
+        echo "</tr>";
+    }
+    
+    
 
-    </td>
-</tr>";
-
-            }
             echo "</tbody></table><br>";
             echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";            echo "</form>";
         } else {
             echo "0 hasil ditemukan";
         }
         echo "<script>
+        // Fungsi untuk memvalidasi ukuran file
         function validateFileSize(input) {
             const maxFileSize = 10 * 1024 * 1024; // 10MB dalam byte
             const file = input.files[0];
@@ -330,7 +303,56 @@ $id_organisasi = $_SESSION['id_organisasi'];
             }
         }
     
-        // Alternatif: Validasi seluruh form sebelum submit
+        // Fungsi untuk mengecek apakah jawaban telah dipilih
+        function checkAnswerSelected(input) {
+            const row = input.closest('tr'); // Ambil baris terkait
+            const radios = row.querySelectorAll('input[type=\"radio\"]'); // Dapatkan semua radio button di baris
+            let isAnswered = false;
+    
+            // Cek apakah ada jawaban yang dipilih
+            radios.forEach(function(radio) {
+                if (radio.checked) {
+                    isAnswered = true;
+                }
+            });
+    
+            return isAnswered;
+        }
+    
+        // Tambahkan event listener ke setiap input file dan input link
+        document.addEventListener('DOMContentLoaded', function () {
+            const fileInputs = document.querySelectorAll('.upload-box');
+            const linkInputs = document.querySelectorAll('.link-input');
+    
+            // Untuk setiap input file, cek apakah jawaban sudah dipilih sebelum unggah file
+            fileInputs.forEach(function(input) {
+                input.addEventListener('click', function(e) {
+                    if (!checkAnswerSelected(input)) {
+                        alert('Silakan pilih jawaban Ya atau Tidak terlebih dahulu.');
+                        e.preventDefault(); // Mencegah interaksi lebih lanjut
+                        input.blur(); // Keluarkan fokus dari input
+                    }
+                });
+    
+                // Validasi ukuran file
+                input.addEventListener('change', function() {
+                    validateFileSize(this);
+                });
+            });
+    
+            // Untuk setiap input link, cek apakah jawaban sudah dipilih sebelum mengisi link
+            linkInputs.forEach(function(input) {
+                input.addEventListener('click', function(e) {
+                    if (!checkAnswerSelected(input)) {
+                        alert('Silakan pilih jawaban Ya atau Tidak terlebih dahulu.');
+                        e.preventDefault(); // Mencegah interaksi lebih lanjut
+                        input.blur(); // Keluarkan fokus dari input
+                    }
+                });
+            });
+        });
+    
+        // Validasi form sebelum submit
         document.getElementById('kuesionerForm').addEventListener('submit', function (event) {
             const fileInputs = document.querySelectorAll('.upload-box');
             const maxFileSize = 10 * 1024 * 1024; // 10MB dalam byte
@@ -343,25 +365,27 @@ $id_organisasi = $_SESSION['id_organisasi'];
                 }
             }
         });
-
+    
         function toggleInputs(radio) {
-    // Dapatkan elemen input file dan link terkait
-    const row = radio.closest('tr');
-    const linkInput = row.querySelector('.link-input');
-    const fileInput = row.querySelector('.file-input');
-
-    // Jika 'Tidak' dipilih, nonaktifkan input link dan file
-    if (radio.value === 'Tidak') {
-        linkInput.disabled = true; // Nonaktifkan input link
-        linkInput.value = ''; // Reset nilai input link
-        fileInput.disabled = true; // Nonaktifkan input file
-        fileInput.value = ''; // Reset nilai input file
-    } else {
-        linkInput.disabled = false; // Aktifkan input link
-        fileInput.disabled = false; // Aktifkan input file
-    }
-}
+            // Dapatkan elemen input file dan link terkait
+            const row = radio.closest('tr');
+            const linkInput = row.querySelector('.link-input');
+            const fileInput = row.querySelector('.file-input');
+    
+            // Jika 'Tidak' dipilih, nonaktifkan input link dan file
+            if (radio.value === 'Tidak') {
+                linkInput.disabled = true; // Nonaktifkan input link
+                linkInput.value = ''; // Reset nilai input link
+                fileInput.disabled = true; // Nonaktifkan input file
+                fileInput.value = ''; // Reset nilai input file
+            } else {
+                linkInput.disabled = false; // Aktifkan input link
+                fileInput.disabled = false; // Aktifkan input file
+            }
+        }
     </script>";
+    
+    
     
         $conn->close();
         ?>

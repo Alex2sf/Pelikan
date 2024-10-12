@@ -5,8 +5,12 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     exit();
 }
 
-include '../koneksi.php';
+$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
+// Cek koneksi database
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
 
 $id_akun = $_SESSION['id_akun'];
 
@@ -26,19 +30,24 @@ if ($id_organisasi <= 0) {
     die("ID Organisasi tidak valid.");
 }
 
-// Ambil kuesioner yang perlu diisi dengan kategori dan subkategori
-$sql = "SELECT k.id_kuesioner, p.pertanyaan, p.bobot, k.jawaban, k.link, k.dokumen, k.nilai, k.catatan, k.verifikasi, o.nama_organisasi,
-               cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3
+$sql = "SELECT k.id_kuesioner, p.pertanyaan, p.bobot, k.jawaban, k.link, k.dokumen, k.nilai, p.A, p.B, p.C, p.D, p.E, k.catatan, k.verifikasi, o.nama_organisasi,
+               cat.id_kategori, cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3
         FROM kuesioner k
         JOIN pertanyaan p ON k.id_pertanyaan = p.id_pertanyaan
         JOIN organisasi o ON k.id_organisasi = o.id_organisasi
-        LEFT JOIN kategori cat ON p.id_kategori = cat.id_kategori
+        LEFT JOIN kategori cat ON p.id_kategori = cat.id_kategori 
         LEFT JOIN subkategori1 sub1 ON p.id_subkategori1 = sub1.id_subkategori1
         LEFT JOIN subkategori2 sub2 ON p.id_subkategori2 = sub2.id_subkategori2
         LEFT JOIN subkategori3 sub3 ON p.id_subkategori3 = sub3.id_subkategori3
         WHERE k.id_organisasi = ? AND k.id_penilai = ?
-        ORDER BY cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3, k.verifikasi, k.id_kuesioner DESC";
-
+        ORDER BY 
+               cat.id_kategori ASC,    -- Urutkan berdasarkan ID kategori dari kecil ke besar
+               sub1.subkategori1 ASC,  
+               sub2.subkategori2 ASC,  
+               sub3.subkategori3 ASC,  
+               k.verifikasi DESC,      
+               k.id_kuesioner ASC";    
+ 
 
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('ii', $id_organisasi, $id_penilai);
@@ -69,6 +78,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header("Location: " . $_SERVER['PHP_SELF'] . "?id_organisasi=" . $id_organisasi);
     exit();
 }
+// Query untuk menghitung total nilai per kategori
+$totalNilaiQuery = "SELECT k.id_kategori, SUM(k.nilai) AS total_nilai, cat.kategori
+                     FROM kuesioner k
+                     JOIN kategori cat ON k.id_kategori = cat.id_kategori
+                     WHERE k.id_penilai = ? AND k.verifikasi = 1
+                     GROUP BY k.id_kategori";
+
+// Mempersiapkan statement
+$stmtTotalNilai = $conn->prepare($totalNilaiQuery);
+$stmtTotalNilai->bind_param('i', $id_penilai);
+$stmtTotalNilai->execute();
+$resultTotalNilai = $stmtTotalNilai->get_result();
 ?>
 
 <!DOCTYPE html>
@@ -254,123 +275,195 @@ textarea {
     <h2>Dashboard Penilai</h2>
 
     <div class="container">
-        <form action="penilai_dashboard.php?id_organisasi=<?php echo $id_organisasi; ?>" method="POST">
-            <?php
-            // Loop melalui hasil query
-            while ($row = $result->fetch_assoc()) {
-                $dokumen = $row['dokumen']; // Nama file dokumen dari database
+    <form action="penilai_dashboard.php?id_organisasi=<?php echo $id_organisasi; ?>" method="POST">
+        <?php
+        // Loop melalui hasil query
+        while ($row = $result->fetch_assoc()) {
+            $dokumen = $row['dokumen']; // Nama file dokumen dari database
 
-                // Jika kategori berubah, tutup tabel sebelumnya
-                if ($last_kategori != $row['kategori']) {
-                    if ($last_kategori != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori
-                    $last_kategori = $row['kategori'];
+            // Jika kategori berubah, tutup tabel sebelumnya
+            if ($last_kategori != $row['kategori']) {
+                if ($last_kategori != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                 }
+                echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori
+                $last_kategori = $row['kategori'];
+            }
 
-                // Jika SubKategori1 berubah, tutup tabel sebelumnya
-                if ($last_subkategori1 != $row['subkategori1']) {
-                    if ($last_subkategori1 != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                            <thead>
-                                <tr style='background-color: #1E90FF; color: black;'>
-                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
-                                </tr>
-                            </thead>
-                            <tbody>";
-                    $last_subkategori1 = $row['subkategori1'];
-                    $last_subkategori2 = ''; // Reset SubKategori2
-                    $last_subkategori3 = ''; // Reset SubKategori3
+            // Jika SubKategori1 berubah, tutup tabel sebelumnya
+            if ($last_subkategori1 != $row['subkategori1']) {
+                if ($last_subkategori1 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                 }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #1E90FF; color: black;'>
+                                <th style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+                $last_subkategori1 = $row['subkategori1'];
+                $last_subkategori2 = ''; // Reset SubKategori2
+                $last_subkategori3 = ''; // Reset SubKategori3
+            }
 
-                // Jika SubKategori2 berubah, tutup tabel sebelumnya
-                if ($last_subkategori2 != $row['subkategori2']) {
-                    if ($last_subkategori2 != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                            <thead >
-                                <tr style='background-color: #00008B; color: white;'>
-                                    <th>{$row['subkategori2']}</th>
-                                </tr>
-                            </thead>
-                            <tbody>";
-                    $last_subkategori2 = $row['subkategori2'];
-                    $last_subkategori3 = ''; // Reset SubKategori3
+            // Jika SubKategori2 berubah, tutup tabel sebelumnya
+            if ($last_subkategori2 != $row['subkategori2']) {
+                if ($last_subkategori2 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                 }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #00008B; color: white;'>
+                                <th>{$row['subkategori2']}</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+                $last_subkategori2 = $row['subkategori2'];
+                $last_subkategori3 = ''; // Reset SubKategori3
+            }
 
-                // Jika SubKategori3 berubah, tutup tabel sebelumnya
-                if ($last_subkategori3 != $row['subkategori3']) {
-                    if ($last_subkategori3 != '') {
-                        echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
-                    }
-                    echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                            <thead>
-                                <tr style='background-color: #FFA500; color: black;'>
-                                    <th style='padding: 10px; width: 60%;'>{$row['subkategori3']}</th>
-                                <th style='padding: 10px; width: 60%;'>bobot</th>
-
-                                 <th style='padding: 10px; width: 60%;'>jawaban</th>
-                                 <th style='padding: 10px; width: 60%;'>link</th>
-                                 <th style='padding: 10px; width: 60%;'>dokumen</th>
-                                 <th style='padding: 10px; width: 60%;'>nilai</th>
-                                 <th style='padding: 10px; width: 60%;'>catatan</th>
-                                 <th style='padding: 10px; width: 60%;'>verifikasi</th>
-                                 <th style='padding: 10px; width: 60%;'></th>
-                                </tr>
-                            </thead>
-                            <tbody>";
-                    $last_subkategori3 = $row['subkategori3'];
+            // Jika SubKategori3 berubah, tutup tabel sebelumnya
+            if ($last_subkategori3 != $row['subkategori3']) {
+                if ($last_subkategori3 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
                 }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #FFA500; color: black;'>
+                                <th style='padding: 10px; width: 60%;'>{$row['subkategori3']}</th>
+                                <th style='padding: 10px; width: 10%;'>Bobot</th>
+                                <th style='padding: 10px; width: 10%;'>Jawaban</th>
+                                <th style='padding: 10px; width: 10%;'>Link</th>
+                                <th style='padding: 10px; width: 10%;'>Dokumen</th>
+                                <th style='padding: 10px; width: 10%;'>Nilai</th>
+                                <th style='padding: 10px; width: 10%;'>Catatan</th>
+                                <th style='padding: 10px; width: 10%;'>Verifikasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+                $last_subkategori3 = $row['subkategori3'];
+            }
 
-                // Tampilkan baris data pertanyaan
-                echo "<tr>
-                <td>{$row['pertanyaan']}</td>
-                        <td>{$row['bobot']}</td> <!-- Menampilkan bobot di sini -->
-
-                <td>{$row['jawaban']}</td>
-                <td><a href='{$row['link']}' target='_blank'>{$row['link']}</a></td>
-                <td>";
+// Tampilkan baris data pertanyaan
+echo "<tr>
+        <td>{$row['pertanyaan']}</td>
+        <td>{$row['bobot']}</td>
+        <td>{$row['jawaban']}</td>
+        <td><a href='{$row['link']}' target='_blank'>{$row['link']}</a></td>
+        <td>";
 if (!empty($row['dokumen'])) {
     echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a>";
 } else {
     echo "Tidak ada dokumen";
 }
-echo "</td>
-                
-              
-                       <td>
- <select name='nilai[{$row['id_kuesioner']}]'>
-            <option value=''>Pilih Nilai</option> <!-- Opsi kosong/default -->
-            <option value='A'>A</option>
-            <option value='B'>B</option>
-            <option value='C'>C</option>
-            <option value='D'>D</option>
-        </select>                          
-                        </td>
-                                               <td>
-                          <textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea>
-                          
-                        </td>
-                                                              <td>
-                            <label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label>
-                          
-                        </td>
-                         <td>
-                            <input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'>
-                          
-                        </td>
-                        </tr>";
-                }
+echo "</td>";
 
-                // Tutup tabel terakhir
-                if ($last_subkategori3 != '') {
-                    echo "</tbody></table><br>";
+// Cek jika jawaban bukan "Tidak", tampilkan dropdown nilai
+if (strtolower($row['jawaban']) != 'tidak') {
+    echo "<td>
+            <select name='nilai[{$row['id_kuesioner']}]'>
+                <option value=''>Pilih Nilai</option>"; // Opsi kosong/default
+
+    // Menampilkan hanya kolom yang tidak NULL dan memiliki nilai
+    if (!is_null($row['A'])) {
+        echo "<option value='{$row['A']}'>A: {$row['A']}</option>";
+    }
+    if (!is_null($row['B'])) {
+        echo "<option value='{$row['B']}'>B: {$row['B']}</option>";
+    }
+    if (!is_null($row['C'])) {
+        echo "<option value='{$row['C']}'>C: {$row['C']}</option>";
+    }
+    if (!is_null($row['D'])) {
+        echo "<option value='{$row['D']}'>D: {$row['D']}</option>";
+    }
+    if (!is_null($row['E'])) {
+        echo "<option value='{$row['E']}'>E: {$row['E']}</option>";
+    }
+    echo "</select>
+        </td>";
+} else {
+    // Jika jawaban "Tidak", beri pesan bahwa nilai tidak bisa dipilih
+    echo "<td>Tidak dapat mengisi Nilai</td>";
+}
+
+// Kolom catatan dan verifikasi
+echo "<td><textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea></td>";
+echo "<td><label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label></td>";
+echo "<td><input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'></td>";
+echo "</tr>";
+
+        }
+
+        // Tutup tabel terakhir
+        if ($last_subkategori3 != '') {
+            echo "</tbody></table><br>";
+        }
+        echo "<h3>Nilai Per Kategori:</h3>";
+        while ($rowTotal = $resultTotalNilai->fetch_assoc()) {
+            $kategoriId = $rowTotal['id_kategori'];
+            $totalNilai = $rowTotal['total_nilai'];
+            $kategoriNama = $rowTotal['kategori'];
+            
+            // Menampilkan hasil total nilai per kategori
+            echo "KATEGORI " . $kategoriNama . " = " . number_format($totalNilai, 2) . "<br>";
+        
+            // Query untuk mengupdate nilai kategori di tabel organisasi
+            $updateNilaiQuery = "";
+        
+            // Menentukan kolom nilai berdasarkan id_kategori
+            switch ($kategoriId) {
+                case 1:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori1 = ? WHERE id_penilai = ?";
+                    break;
+                case 2:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori2 = ? WHERE id_penilai = ?";
+                    break;
+                case 3:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori3 = ? WHERE id_penilai = ?";
+                    break;
+                case 4:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori4 = ? WHERE id_penilai = ?";
+                    break;
+                case 5:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori5 = ? WHERE id_penilai = ?";
+                    break;
+                    case 6:
+                        $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori6 = ? WHERE id_penilai = ?";
+                        break;
+                default:
+                    // Jika tidak ada kategori yang sesuai
+                    echo "Kategori tidak ditemukan!";
+                    break;
+            }
+        
+            // Pastikan bahwa query update tidak kosong
+            if (!empty($updateNilaiQuery)) {
+                // Mempersiapkan statement untuk update
+                $stmtUpdateNilai = $conn->prepare($updateNilaiQuery);
+                
+                // Bind parameter, nilai dan id_penilai
+                $stmtUpdateNilai->bind_param('di', $totalNilai, $id_penilai);
+                
+                // Menjalankan query update
+                if ($stmtUpdateNilai->execute()) {
+                } else {
                 }
-                ?>
+                
+                // Menutup statement
+                $stmtUpdateNilai->close();
+            }
+        }
+        
+        // Menutup statement total nilai
+        $stmtTotalNilai->close();
+
+        
+        ?>
+
+
+        
 <button type="submit" class="button" id="submitBtn">Simpan Perubahan</button>
 </form>
 

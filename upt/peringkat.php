@@ -24,13 +24,20 @@ if (!$conn) {
 // Query to get organization rankings
 $query = "
     SELECT 
-        nama_organisasi, 
-        (nilai_kategori1 + nilai_kategori2 + nilai_kategori3 + 
-         nilai_kategori4 + nilai_kategori5 + nilai_kategori6) AS total_nilai 
-    FROM 
-        organisasi 
-    ORDER BY 
-        total_nilai DESC";
+    nama_organisasi, 
+    ROUND(
+        (COALESCE(nilai_kategori1, 0) + 
+         COALESCE(nilai_kategori2, 0) + 
+         COALESCE(nilai_kategori3, 0) + 
+         COALESCE(nilai_kategori4, 0) + 
+         COALESCE(nilai_kategori5, 0) + 
+         COALESCE(nilai_kategori6, 0)), 2
+    ) AS total_nilai 
+FROM 
+    organisasi 
+ORDER BY 
+    total_nilai DESC;
+";
 
 $result = mysqli_query($conn, $query);
 ?>

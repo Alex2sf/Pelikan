@@ -7,13 +7,9 @@ $username1 = 'admin';
 include '../koneksi.php';
 
 // Query untuk mendapatkan daftar organisasi
-$sql = "SELECT DISTINCT o.* 
+$sql = "SELECT DISTINCT o.*
         FROM organisasi o
-        JOIN kuesioner k ON o.id_organisasi = k.id_organisasi
-        WHERE k.jawaban IS NOT NULL 
-          AND k.nilai IS NOT NULL 
-          AND k.catatan IS NOT NULL 
-          AND k.verifikasi IS NOT NULL";
+        JOIN kuesioner k ON o.id_organisasi = k.id_organisasi";
 $result = $conn->query($sql);
 ?>
 
