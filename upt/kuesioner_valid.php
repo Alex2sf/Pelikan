@@ -252,11 +252,17 @@ $id_organisasi = $_SESSION['id_organisasi'];
                 if ($id_organisasi) {
                     // Query untuk mendapatkan data organisasi dan penilai
                     $query = $conn->prepare("
-                        SELECT o.unit_eselon1, o.nama_organisasi, o.batas_waktu, p.nama_penilai 
-                        FROM organisasi o
-                        LEFT JOIN Profile_Penilai p ON o.id_penilai = p.id_penilai
-                        WHERE o.id_organisasi = ?
-                    ");
+                    SELECT o.unit_eselon1, o.nama_organisasi, o.batas_waktu,o.id_penilai, p.nama_penilai 
+                    FROM organisasi o
+                    LEFT JOIN Profile_Penilai p ON o.id_penilai = p.id_penilai
+                    WHERE o.id_organisasi = ? 
+                    AND o.unit_eselon1 IS NOT NULL AND o.unit_eselon1 <> ''
+                    AND o.nama_organisasi IS NOT NULL AND o.nama_organisasi <> ''
+                    AND o.batas_waktu IS NOT NULL AND o.batas_waktu <> ''
+                    AND o.id_penilai IS NOT NULL AND o.batas_waktu <> ''
+
+                    AND p.nama_penilai IS NOT NULL AND p.nama_penilai <> ''
+                ");
                     $query->bind_param('i', $id_organisasi);  // Bind parameter
                     $query->execute();
                     $result = $query->get_result();
@@ -313,15 +319,23 @@ $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
     
     <?php if($is_batas_waktu_terlampaui): ?>
         <?= "Batas waktu sudah habis" ?>
+        <div class="form-submit">
+    <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary">
+        Lihat Hasil Kuesioner
+    </a>
+</div>
     <?php else: ?>
         <div class="form-submit">
             <button type="submit" class="btn btn-primary">Submit Kuesioner</button>
+            <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary">
+        Lihat Hasil Kuesioner
+    </a>
         </div>
     <?php endif ?>
 </form>
                 <?php
                     } else {
-                        echo "<p>Data organisasi tidak ditemukan.</p>";
+                        echo "<div class='alert alert-danger'>Data organisasi tidak lengkap atau belum ada penilai yang ditugaskan.</div>";
                     }
                 } else {
                     echo "<p>ID organisasi tidak ditemukan.</p>";
