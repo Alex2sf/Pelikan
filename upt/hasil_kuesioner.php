@@ -6,8 +6,94 @@ if (!isset($_SESSION['id_akun'])) {
     header("Location: ../index.php");
     exit;
 }
+date_default_timezone_set('Asia/Jakarta');
+ob_start();
 
+$username="";
+$username1=$_SESSION["role"];
 $id_akun = $_SESSION['id_akun'];
+?>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script type="text/javascript" src="../js/bootstrap.js"></script>
+        <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+        <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
+        <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <style>
+            body{
+                outline: black; /* Menghilangkan outline fokus */
+                margin: 20px;
+                padding: 50px;
+                overflow-x: hidden;
+            }
+            footer {
+                width: 100%;
+                background-color: #4535C1;
+                color: white;
+                padding: 5px;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                text-align: center;
+            }
+                /* Gaya untuk input link */
+            input[type="text"] {
+                padding: 5px;
+                width: 150px;
+                border: 2px solid #007BFF;
+                border-radius: 50px;
+                transition: 0.3s ease;
+                text-align: center;
+            }
+
+            input[type="text"]:focus, input[type="text"]:valid {
+                box-shadow: 0 0 1px rgba(0, 91, 234, 0.2);
+            }
+            table th, table td {
+                padding: 10px;
+                text-align: center; /* Menyelaraskan konten secara horizontal ke tengah */
+                vertical-align: middle; /* Menyelaraskan konten secara vertikal ke tengah */
+                border-bottom: 1px solid #ddd;
+            }
+
+            table td input[type="radio"],
+            table td input[type="text"],
+            table td input[type="file"] {
+                margin: 0 auto; /* Membuat elemen berada di tengah */
+                display: block; /* Memastikan elemen berbentuk blok untuk posisi */
+            }
+            .upload-box {
+                font-size: 5 px;
+                background: white;
+                border-radius: 50px;
+                box-shadow: 0px 0px 5px black;
+                width: 350px;
+                outline:none;
+            }
+            ::-webkit-file-upload-button{
+                color: white;
+                background: #206a5d;
+                padding:5px;
+                border:none;
+                border-radius:20px;
+                box-shadow: 1px 0 1px 1px #6b4559;
+                outline: none;
+            }
+            ::-webkit-file-upload-button:hover{
+                background: #438a5e;
+                cursor: pointer;
+            }
+        </style>
+    </head>
+    <body>
+    <?php include 'navbar.php'; ?>
+
+<?php
+// Bagian kode PHP untuk menampilkan hasil kuesioner dimulai dari sini
 
 // Ambil id_organisasi dari akun yang login
 $sql = "SELECT id_organisasi FROM organisasi WHERE id_akun = '$id_akun'";
@@ -110,13 +196,13 @@ if ($result->num_rows > 0) {
                     <td>{$row['link']}</td>
                     <td>";
                     
-if (!empty($row['dokumen'])) {
-    echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a>";
-} else {
-    echo "Tidak ada dokumen";
-}
+            if (!empty($row['dokumen'])) {
+                echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a>";
+            } else {
+                echo "Tidak ada dokumen";
+            }
 
-echo "</td><td>{$row['nilai']}</td>
+            echo "</td><td>{$row['nilai']}</td>
                     <td>{$row['catatan']}</td>
                     <td>{$row['verifikasi']}</td>
                   </tr>";

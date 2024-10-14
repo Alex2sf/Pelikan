@@ -1,5 +1,7 @@
 <?php
 session_start();
+require 'session_timeout.php';
+
 if (!isset($_SESSION['id_akun'])) {
     echo json_encode(['success' => false, 'message' => 'Unauthorized']);
     exit();

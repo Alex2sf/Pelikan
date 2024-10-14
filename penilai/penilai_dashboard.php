@@ -1,7 +1,9 @@
 <?php
 session_start();
+require 'session_timeout.php';
+
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
-    header("Location: login_penilai.php");
+    header("Location: ../index.php");
     exit();
 }
 

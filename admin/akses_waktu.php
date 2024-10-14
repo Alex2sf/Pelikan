@@ -371,70 +371,18 @@ input[type="submit"]:hover {
 </head>
 
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div>Admin</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="register.php">Daftar Akun</a>
-                        </li>
-                       <!-- dropdown kuesioner -->
-                       <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Kuesioner
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
-                            </ul>
-                        </li>
-                        <!-- Dropdown Akses -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Akses
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
-                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
-    
-                            </ul>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+<div style="display: flex; justify-content: space-between; align-items: center; margin: 20px 70px; position: absolute; top: 20px; left: 0; right: 0;">
+    <!-- Tombol Back di sebelah kiri -->
+    <a href="akses_waktuorganisasi.php" style="text-decoration: none;">
+        <button style="padding: 10px 20px; background-color: #4535c1; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center;">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20px" height="20px" style="margin-right: 10px;">
+                <path d="M0 0h24v24H0z" fill="none"/>
+                <path d="M12 4V1L3 9l9 8v-3c4.55 0 8.45 1.72 11 5-1-5.48-4.48-10-11-10z"/>
+            </svg>
+            Back
+        </button>
+    </a>
+</div>
 
 
 <!-- Form untuk setel batas waktu -->

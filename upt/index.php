@@ -91,27 +91,8 @@ if ($result) {
             </div>
         </div>
 
-        <!--Container Ungu-->
-        <!-- <div class="container-fluid text-center" style="background-color: #4535C1; color:white; padding:40px">
-            <div class="row">
-                <div class="col">
-                    <div class="col">One of three columns</div>
-                    <div class="col">One of three columns</div>
-                </div>
-                <div class="col">
-                    <div class="col">
-                        <div class="text-center">
-                            <img src="img\document.png" class="rounded" alt="..." style="width: 30%; height: auto; padding-bottom: 10px;">
-                      </div>
-                    </div>
-                    <div class="col">Pengisian Kuesioner</div>
-                </div>
-                <div class="col">
-                    <div class="col">One of three columns</div>
-                    <div class="col">Verifikasi Kuesioner</div>
-                </div>
-            </div>
-        </div> -->
+ 
+    
 
         <!--Container Informasi Kontak-->
         <div class="container-fluid text-center text-black py-4">

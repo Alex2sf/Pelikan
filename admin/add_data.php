@@ -318,13 +318,13 @@ $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM 
 
         <div class="form-container">
         <!-- Formulir untuk Menambahkan Kategori -->
-        <form action="add_data.php" method="post" onsubmit="showConfirmation(event)" name="formKategori">
+        <!-- <form action="add_data.php" method="post" onsubmit="showConfirmation(event)" name="formKategori">
             <h3>Tambah Kategori</h3>
             <input type="hidden" name="action" value="add_category">
             <label for="kategori">Kategori:</label>
             <input type="text" id="kategori" name="kategori" required>
             <button type="submit">Tambah Kategori</button>
-        </form>
+        </form> -->
         <div id="modalKategori" class="modal">
             <div class="modal-content">
                 <h4>Kategori berhasil ditambahkan!</h4>

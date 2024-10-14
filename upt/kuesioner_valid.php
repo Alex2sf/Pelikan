@@ -283,8 +283,14 @@ $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
 
                     <div class="form-group">
                         <label for="batas_waktu">Batas Waktu Pengerjaan:</label>
-                        <span class="form-control-plaintext" id="batas_waktu"><?php echo $batas_waktu; ?></span>
-                    </div>
+                        <?php 
+            if (!empty($batas_waktu)) {
+                // Tampilkan batas waktu dalam format yang dapat dibaca manusia
+                echo date('d-m-Y H:i:s', $batas_waktu); // Format: Tanggal-Bulan-Tahun Jam:Menit:Detik
+            } else {
+                echo "Belum diatur";
+            }
+        ?>                    </div>
                        <!-- Form untuk submit ke kuesioner_valid.php -->
                        <form action="kuesioner.php" method="POST">
     <input type="hidden" name="id_organisasi" value="<?php echo $id_organisasi; ?>">

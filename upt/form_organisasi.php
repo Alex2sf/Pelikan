@@ -12,12 +12,8 @@ if (!isset($_SESSION['id_akun'])) {
 $username="";
 $username1=$_SESSION["role"];
 
-$id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 // Ambil data organisasi berdasarkan id_akun
 $sql = "SELECT * FROM Organisasi WHERE id_akun = $id_akun";

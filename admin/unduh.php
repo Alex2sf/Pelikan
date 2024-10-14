@@ -73,96 +73,106 @@ $host = 'localhost';
 $user = 'root';
 $password = '';
 $dbname = 'sigh';
-include '../koneksi.php';
 
+$conn = new mysqli($host, $user, $password, $dbname);
 
-// Query untuk mengambil data dengan join pada tabel kategori dan subkategori
-$sql = "
-    SELECT p.id_pertanyaan, k.kategori, s1.subkategori1, s2.subkategori2, s3.subkategori3, 
-           p.pertanyaan, p.web, p.bobot, q.jawaban, q.link, q.dokumen,q.nilai  , q.catatan, q.verifikasi
-    FROM pertanyaan p
-    JOIN kategori k ON p.id_kategori = k.id_kategori
-    JOIN subkategori1 s1 ON p.id_subkategori1 = s1.id_subkategori1
-    JOIN subkategori2 s2 ON p.id_subkategori2 = s2.id_subkategori2
-    JOIN subkategori3 s3 ON p.id_subkategori3 = s3.id_subkategori3
-    LEFT JOIN kuesioner q ON p.id_pertanyaan = q.id_pertanyaan
-";
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Koneksi gagal: " . $conn->connect_error);
+}
 
-$result = $conn->query($sql);
-$uploads_base_url = "http://localhost/Pelikan/upt/uploads/"; // URL untuk file uploads
-// Inisialisasi variabel untuk menyimpan kategori dan subkategori terakhir yang ditampilkan
-$last_kategori = '';
-$last_subkategori1 = '';
-$last_subkategori2 = '';
-$last_subkategori3 = '';
+// Cek apakah id_organisasi ada di URL
+if (isset($_GET['id'])) {
+    $id_organisasi = (int)$_GET['id']; // Mengonversi ke integer untuk keamanan
+}
 
-// Memulai output HTML
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Jika kategori berubah, tutup tabel sebelumnya
-        if ($last_kategori != $row['kategori']) {
-            if ($last_kategori != '') {
-                echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+    // Query untuk mengambil data dengan join pada tabel kategori dan subkategori
+    $sql = "
+        SELECT p.id_pertanyaan, k.kategori, s1.subkategori1, s2.subkategori2, s3.subkategori3, 
+               p.pertanyaan, p.web, p.bobot, q.jawaban, q.link, q.dokumen, q.nilai, q.catatan, q.verifikasi
+        FROM pertanyaan p
+        JOIN kategori k ON p.id_kategori = k.id_kategori
+        JOIN SubKategori1 s1 ON p.id_subkategori1 = s1.id_subkategori1
+        JOIN SubKategori2 s2 ON p.id_subkategori2 = s2.id_subkategori2
+        JOIN SubKategori3 s3 ON p.id_subkategori3 = s3.id_subkategori3
+        LEFT JOIN kuesioner q ON p.id_pertanyaan = q.id_pertanyaan
+        WHERE q.id_organisasi = $id_organisasi"; // Menambahkan filter berdasarkan id_organisasi
+
+    $result = $conn->query($sql);
+    $uploads_base_url = "http://localhost/Pelikan/upt/uploads/"; // URL untuk file uploads
+
+    // Inisialisasi variabel untuk menyimpan kategori dan subkategori terakhir yang ditampilkan
+    $last_kategori = '';
+    $last_subkategori1 = '';
+    $last_subkategori2 = '';
+    $last_subkategori3 = '';
+
+    // Memulai output HTML
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            // Jika kategori berubah, tutup tabel sebelumnya
+            if ($last_kategori != $row['kategori']) {
+                if ($last_kategori != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                }
+                echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori baru
+                $last_kategori = $row['kategori'];
             }
-            echo "<h2>{$row['kategori']}</h2>"; // Tampilkan kategori baru
-            $last_kategori = $row['kategori'];
-        }
 
-        // Jika SubKategori1 berubah, buat tabel baru
-        if ($last_subkategori1 != $row['subkategori1']) {
-            if ($last_subkategori1 != '') {
-                echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+            // Jika SubKategori1 berubah, buat tabel baru
+            if ($last_subkategori1 != $row['subkategori1']) {
+                if ($last_subkategori1 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #1E90FF; color: white;'>
+                                <th colspan='3' style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+                $last_subkategori1 = $row['subkategori1'];
+                $last_subkategori2 = ''; // Reset SubKategori2
+                $last_subkategori3 = ''; // Reset SubKategori3
             }
-            echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                    <thead>
-                        <tr style='background-color: #1E90FF; color: white;'>
-                            <th colspan='3' style='padding: 10px; width: 60%;'>{$row['subkategori1']}</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-            $last_subkategori1 = $row['subkategori1'];
-            $last_subkategori2 = ''; // Reset SubKategori2
-            $last_subkategori3 = ''; // Reset SubKategori3
-        }
 
-        // Jika SubKategori2 berubah, buat tabel baru
-        if ($last_subkategori2 != $row['subkategori2']) {
-            if ($last_subkategori2 != '') {
-                echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+            // Jika SubKategori2 berubah, buat tabel baru
+            if ($last_subkategori2 != $row['subkategori2']) {
+                if ($last_subkategori2 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #00008B; color: white;'>
+                                <th colspan='3'>{$row['subkategori2']}</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
+                $last_subkategori2 = $row['subkategori2'];
+                $last_subkategori3 = ''; // Reset SubKategori3
             }
-            echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                    <thead>
-                        <tr style='background-color: #00008B; color: white;'>
-                            <th colspan='3'>{$row['subkategori2']}</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-            $last_subkategori2 = $row['subkategori2'];
-            $last_subkategori3 = ''; // Reset SubKategori3
-        }
 
-        // Jika SubKategori3 berubah, buat tabel baru
-        if ($last_subkategori3 != $row['subkategori3']) {
-            if ($last_subkategori3 != '') {
-                echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+            // Jika SubKategori3 berubah, buat tabel baru
+            if ($last_subkategori3 != $row['subkategori3']) {
+                if ($last_subkategori3 != '') {
+                    echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
+                }
+                echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
+                        <thead>
+                            <tr style='background-color: #FFA500; color: white;'>
+                                <th style='padding: 10px; width: 40%;'>{$row['subkategori3']}</th>
+                                <th style='padding: 10px;'>Pertanyaan</th>
+                                <th style='padding: 10px;'>Bobot</th>
+                                <th style='padding: 10px;'>Jawaban</th>
+                                <th style='padding: 10px;'>Link</th>
+                                <th style='padding: 10px;'>Dokumen</th>
+                                <th style='padding: 10px;'>Nilai</th>
+                                <th style='padding: 10px;'>Catatan</th>
+                                <th style='padding: 10px;'>Verifikasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>";
             }
-            echo "<table border='1' style='border-collapse: collapse; width: 100%; margin-bottom: 10px;'>
-                    <thead>
-                        <tr style='background-color: #FFA500; color: white;'>
-                            <th style='padding: 10px; width: 40%;'>{$row['subkategori3']}</th>
-                            <th style='padding: 10px;'>Pertanyaan</th>
-                            <th style='padding: 10px;'>Bobot</th>
-                            <th style='padding: 10px;'>Jawaban</th>
-                            <th style='padding: 10px;'>Link</th>
-                            <th style='padding: 10px;'>Dokumen</th>
-                            <th style='padding: 10px;'>Nilai</th>
-                            <th style='padding: 10px;'>Catatan</th>
-                            <th style='padding: 10px;'>Verifikasi</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-            $last_subkategori3 = $row['subkategori3'];
-        }
 ?>
 
         <!-- Tampilkan data pertanyaan -->

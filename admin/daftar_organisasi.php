@@ -4,12 +4,26 @@ session_start();
 // Koneksi ke database
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 $username1 = 'admin';
-include '../koneksi.php';
+$host = 'localhost'; // ganti dengan host database Anda
+$user = 'root'; // ganti dengan username database Anda
+$password = ''; // ganti dengan password database Anda
+$database = 'sigh'; // ganti dengan nama database Anda
+
+$conn = new mysqli($host, $user, $password, $database);
+
+// Cek koneksi
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
 // Query untuk mendapatkan daftar organisasi
-$sql = "SELECT DISTINCT o.*
+$sql = "SELECT DISTINCT o.* 
         FROM organisasi o
-        JOIN kuesioner k ON o.id_organisasi = k.id_organisasi";
+        JOIN kuesioner k ON o.id_organisasi = k.id_organisasi
+        WHERE k.jawaban IS NOT NULL 
+          AND k.nilai IS NOT NULL 
+          AND k.catatan IS NOT NULL 
+          AND k.verifikasi IS NOT NULL";
 $result = $conn->query($sql);
 ?>
 
@@ -90,80 +104,98 @@ $result = $conn->query($sql);
         .btn-download:hover {
             background-color: #218838;
         }
+          /* CSS untuk mengubah warna tulisan saat link aktif */
+    .nav-link.active {
+        color: white !important; /* Mengubah warna tulisan menjadi putih */
+        background-color: #4535C1; /* Mengatur latar belakang jika aktif (ganti dengan warna yang diinginkan) */
+    }
+    
+    /* CSS untuk mengatur warna default untuk link */
+    .nav-link {
+        color: black; /* Warna default untuk semua link */
+    }
+    
+    /* CSS untuk logout */
+    #logout {
+        color: red; /* Warna merah untuk link logout */
+    }
     </style>
 </head>
 <body>
     <!--Navigasi Bar-->
-    
     <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div>Admin</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <!-- beranda -->
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
-                        </li>
-                        <!-- daftar akun -->
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="register.php">Daftar Akun</a>
-                        </li>
-                        <!-- <li class="nav-item px-2">
-                            <a class="nav-link black" href="akses_penilai.php">Akses Penilai</a>
-                        </li> -->
-                        <!-- dropdown kuesioner -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Kuesioner
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
-                            </ul>
-                        </li>
-                        <!-- Dropdown Akses -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Akses
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
-                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
-    
-                            </ul>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
+    <div class="container-fluid fs-5">
+        <!-- Logo -->
+        <a class="navbar-brand fs-5" href="#" style="padding-left: 60px; padding-top: -10px;">
+            <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+        </a>
+        
+        <!-- Nama Aplikasi -->
+        <div>Admin</div>
+
+        <!-- Button Toggle untuk Mobile View -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- Menu Navbar -->
+        <div class="collapse navbar-collapse" id="navbarNav" style="padding-right: 60px;">
+            <ul class="nav nav-tabs ms-auto">
+                <!-- Menu Beranda -->
+                <li class="nav-item px-2">
+                    <a class="nav-link" aria-current="page" href="admin_dashboard.php" style="color: black;">Beranda</a>
+                </li>
+                
+                <!-- Menu Daftar Akun -->
+                <li class="nav-item px-2">
+                    <a class="nav-link" href="register.php" style="color: black;">Daftar Akun</a>
+                </li>
+
+                <!-- Kuesioner Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+                        Kuesioner
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
+                        <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
+                        <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
+                        <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
                     </ul>
-                </div>
-            </div>
-        </nav>
+                </li>
+
+                <!-- Akses Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+                        Akses
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
+                        <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
+                        <li><a class="dropdown-item" href="akses_waktuorganisasi.php">Akses Waktu Organisasi</a></li>
+                    </ul>
+                </li>
+
+                <!-- List UNOR -->
+                <li class="nav-item px-2">
+                    <a class="nav-link" href="Daftar.php" style="color: black;">List UNOR</a>
+                </li>
+
+                <!-- Login/Logout Conditional -->
+                <li class="nav-item px-2">
+                    <?php
+                    if ($username == $username1) {
+                        echo '<a class="nav-link" href="login.php" style="color: black;">Login</a>';
+                    } else {
+                        echo '<a class="nav-link" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout" style="color: red;">Logout</a>';
+                    }
+                    ?>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
 <br><br>
 <h3>Hasil Kuesioner</h3>  
     <table>
@@ -184,7 +216,7 @@ $result = $conn->query($sql);
                     echo "<tr>
                             <td>{$row['id_organisasi']}</td>
                             <td>{$row['nama_organisasi']}</td>
-                            <td><a class='btn-download' href='unduh.php?id={$row['id_organisasi']}'>Lihat Hasil</a></td>
+                            <<td><a class='btn-download' href='unduh.php?id={$row['id_organisasi']}'>Lihat Hasil</a></td>
                           </tr>";
                 }
             } else {
