@@ -3,7 +3,7 @@ session_start();
 include '../koneksi.php';
 
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: ../login.php");
+    header("Location: ../index.php");
     exit;
 }
 

@@ -4,6 +4,6 @@ ob_start();
 session_start();
 session_destroy();
  
-header("Location: ../login_new.php");
+header("Location: ../index.php");
  
 ?>

@@ -1,9 +1,7 @@
 <?php
 session_start();
-$conn = new mysqli('localhost', 'root', '', 'sigh');
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+include '../koneksi.php';
+
 ?>
 
 <html lang="en">
@@ -86,7 +84,7 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'user') {
         });
 
         function redirectToLogin() {
-            window.location.href = 'login.php'; // Atur ke halaman login atau halaman lain
+            window.location.href = '../index.php'; // Atur ke halaman login atau halaman lain
         }
     </script>";
     exit();

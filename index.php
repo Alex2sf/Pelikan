@@ -8,7 +8,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = md5($_POST['password']); // Enkripsi MD5
 
     // Cek kredensial pengguna
-    $sql = "SELECT * FROM Akun_Login WHERE username='$username' AND password='$password'";
+    $sql = "SELECT * FROM akun_login WHERE username='$username' AND password='$password'";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {

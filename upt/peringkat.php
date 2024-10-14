@@ -1,25 +1,17 @@
 <?php
 session_start();
+require 'session_timeout.php';
+
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login_new.php");
+    header("Location: ../index.php");
     exit();
 }
-// Database connection
-$host = 'localhost';  // Your database host
-$dbname = 'sigh';  // Your database name
-$username = 'root';  // Your database username
-$password = '';  // Your database password
+include '../koneksi.php';
 
-// Create connection using MySQLi
-$conn = mysqli_connect($host, $username, $password, $dbname);
-ob_start();
-session_start();
 $username="";
 $username1=$_SESSION["role"];
 // Check connection
-if (!$conn) {
-    die("Connection failed: " . mysqli_connect_error());
-}
+
 
 // Query to get organization rankings
 $query = "
@@ -170,50 +162,8 @@ $result = mysqli_query($conn, $query);
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div>Pelikan</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="index.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" href="peringkat.php">Peringkat</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="kuesioner.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="alur.php">Alur</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>  
+<?php include 'navbar.php'; ?>
+
 <h2>Peringkat Organisasi Berdasarkan Total Nilai</h2>
 
 <div class="table-container">
@@ -255,6 +205,31 @@ $result = mysqli_query($conn, $query);
     </table>
 </div>
 
+              <!-- Modal Konfirmasi Logout -->
+              <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+         <!-- Script untuk menangani modal dan submit form -->
+         <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+            window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
 
  <!--Footer-->
  <footer>

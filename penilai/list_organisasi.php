@@ -124,6 +124,8 @@ $result = $stmt->get_result();
                         <th class="text-center">Lihat Kuesioner</th>
                         <th class="text-center">Verifikasi</th>
                         <th class="text-center">Batalkan</th>
+                        <th class="text-center">Lihat Skor</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -154,6 +156,13 @@ $result = $stmt->get_result();
                                     Batal Verifikasi
                             </button></td>
                             </td>
+
+                            <!-- Tombol Lihat Total Skor -->
+<td class="text-center">
+    <a href="total_skor.php?id_organisasi=<?php echo $row['id_organisasi']; ?>" class="btn btn-info" style="margin-left: 10px;">
+        Lihat Total Skor
+    </a>
+</td>
                         </tr>
                     <?php endwhile; ?>
                 </tbody>

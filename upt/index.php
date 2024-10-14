@@ -1,14 +1,13 @@
 <?php
 ob_start();
 session_start();
+require 'session_timeout.php';
+
 $username="";
 $username1=$_SESSION["role"];
 
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 // Ambil data organisasi
 $sql = "SELECT COUNT(id_organisasi) AS total_count FROM organisasi";
@@ -49,51 +48,8 @@ if ($result) {
         </style>
     </head>
     <body>
-        <!--Navigasi Bar-->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div>Pelikan</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link active" aria-current="page" href="index.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="peringkat.php">Peringkat</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="kuesioner_valid.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="alur.php">Alur</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="../login_new.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <?php include 'navbar.php'; ?>
+
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 

@@ -1,7 +1,10 @@
 <?php
 session_start();
+
+require 'session_timeout.php';
+
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
+    header("Location: ../index.php");
     exit();
 }
 
@@ -9,11 +12,8 @@ $username="";
 $username1=$_SESSION["role"];
 
 $id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 // Ambil data organisasi berdasarkan id_akun
 $sql = "SELECT * FROM Organisasi WHERE id_akun = $id_akun";
@@ -68,51 +68,7 @@ $organisasi = $result->fetch_assoc();
         </style>
     </head>
     <body>
-        <!--Navigasi Bar-->
-        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
-                    <img src="img/pngwing.com.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                </a>
-                <div>Pelikan</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="index.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="peringkat.php">Peringkat</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="kuesioner.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="alur.php">Alur</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <?php include 'navbar.php'; ?>
 
         <!-- Profile Section -->
         <div class="container-fluid" style="margin-top:90px; margin-bottom: 20px;">

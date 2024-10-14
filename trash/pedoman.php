@@ -16,51 +16,8 @@ $username1=$_SESSION["role"];
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <body>
-       <!--Navigasi Bar-->
-       <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
-                    <img src="img/pngwing.com.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top">
-                </a>
-                <div>Pelikan</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="index.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="peringkat.php">Peringkat</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="kuesioner.php">Kuesioner</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="alur.php">Alur</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>
+    <?php include 'navbar.php'; ?>
+
 
         <div class="container text-center"style="color:black; margin-top:90px;">
             <div class="row">

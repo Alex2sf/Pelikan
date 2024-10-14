@@ -1,7 +1,10 @@
 <?php
 session_start();
+
+require 'session_timeout.php';
+
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login.php");
+    header("Location: ../index.php");
     exit();
 }
 
@@ -9,11 +12,7 @@ $username="";
 $username1=$_SESSION["role"];
 
 $id_akun = $_SESSION['id_akun'];
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
-
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+include '../koneksi.php';
 
 // Ambil data dari form
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -30,15 +29,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 // Cek apakah data sudah ada untuk id_akun ini
-$sql = "SELECT * FROM Organisasi WHERE id_akun = $id_akun";
+$sql = "SELECT * FROM organisasi WHERE id_akun = $id_akun";
 $result = $conn->query($sql);
 
 if ($result->num_rows > 0) {
     // Update data
-    $sql = "UPDATE Organisasi SET unit_eselon1='$unit_eselon1', nama_organisasi='$nama_organisasi', alamat='$alamat', email_badan='$email_badan', no_telp_fax='$no_telp_fax', nip_responden='$nip_responden', nama_responden='$nama_responden', jabatan='$jabatan' WHERE id_akun=$id_akun";
+    $sql = "UPDATE organisasi SET unit_eselon1='$unit_eselon1', nama_organisasi='$nama_organisasi', alamat='$alamat', email_badan='$email_badan', no_telp_fax='$no_telp_fax', nip_responden='$nip_responden', nama_responden='$nama_responden', jabatan='$jabatan' WHERE id_akun=$id_akun";
 } else {
     // Insert data baru
-    $sql = "INSERT INTO Organisasi (id_akun, unit_eselon1, nama_organisasi, alamat, email_badan, no_telp_fax, nip_responden, nama_responden, jabatan) 
+    $sql = "INSERT INTO organisasi (id_akun, unit_eselon1, nama_organisasi, alamat, email_badan, no_telp_fax, nip_responden, nama_responden, jabatan) 
             VALUES ('$id_akun', '$unit_eselon1', '$nama_organisasi', '$alamat', '$email_badan', '$no_telp_fax', '$nip_responden', '$nama_responden', '$jabatan')";
 }
 

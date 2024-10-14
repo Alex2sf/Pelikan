@@ -400,14 +400,12 @@ echo "</tr>";
         if ($last_subkategori3 != '') {
             echo "</tbody></table><br>";
         }
-        echo "<h3>Nilai Per Kategori:</h3>";
         while ($rowTotal = $resultTotalNilai->fetch_assoc()) {
             $kategoriId = $rowTotal['id_kategori'];
             $totalNilai = $rowTotal['total_nilai'];
             $kategoriNama = $rowTotal['kategori'];
             
             // Menampilkan hasil total nilai per kategori
-            echo "KATEGORI " . $kategoriNama . " = " . number_format($totalNilai, 2) . "<br>";
         
             // Query untuk mengupdate nilai kategori di tabel organisasi
             $updateNilaiQuery = "";
