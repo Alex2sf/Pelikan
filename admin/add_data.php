@@ -2,6 +2,12 @@
 // Database connection (update with your own connection details)
 ob_start();
 session_start();
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: admin_login.php");
+    exit();
+}
+
+
 $username="";
 $username1=$_SESSION["role"];
 
@@ -86,15 +92,15 @@ $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM 
             alert("Pertanyaan Telah Berhasil Ditambahkan!");
         }
     </script>
-    <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-        <script type="text/javascript" src="../js/bootstrap.js"></script>
+     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Data</title>
+    <script type="text/javascript" src="../js/bootstrap.js"></script>
         <script type="text/javascript" src="../js/bootstrap.min.js"></script>
         <link href="../css/bootstrap.min.css" type="text/css" rel="stylesheet">
         <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
+    <style>
         <style>
              .modal {
             display: none; /* Modal disembunyikan secara default */
@@ -255,7 +261,34 @@ $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM 
 ?>
 <!-- Halaman konten lainnya di sini -->
 
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+    <!-- Modal -->
+   <!-- SweetAlert2 -->
+     <!-- SweetAlert2 -->
+
+      <!-- Script untuk menangani modal dan submit form -->
+      <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
         <div class="form-container">
         <!-- Formulir untuk Menambahkan Kategori -->
         <!-- <form action="add_data.php" method="post" onsubmit="showConfirmation(event)" name="formKategori">
@@ -341,7 +374,35 @@ $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM 
             </div>
         </div>
         
+ <!-- Modal Konfirmasi Logout -->
+ <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
+    <!-- Modal -->
+   <!-- SweetAlert2 -->
+     <!-- SweetAlert2 -->
+
+      <!-- Script untuk menangani modal dan submit form -->
+      <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
                 <!-- Formulir untuk Menambahkan Pertanyaan
                 <form action="add_data.php" method="post" onsubmit="ConfirmationQuestion(event)" name="formPertanyaan">
                     <h3>Tambah Pertanyaan</h3>

@@ -2,7 +2,10 @@
 // Database connection (update with your own connection details)
 ob_start();
 session_start();
-include '../koneksi.php';
+if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
+    header("Location: admin_login.php");
+    exit();
+}include '../koneksi.php';
 
 
 // Handle form submissions for deletion
@@ -94,6 +97,8 @@ $username1 = 'admin';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Kuesioner</title>
+    <script type="text/javascript" src="../js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -204,6 +209,35 @@ $username1 = 'admin';
         <button type="submit" name="update" class="btn btn-primary">Update Pertanyaan</button>
     </form>
 </div>
+
+<div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Modal -->
+   <!-- SweetAlert2 -->
+     <!-- SweetAlert2 -->
+
+      <!-- Script untuk menangani modal dan submit form -->
+      <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>

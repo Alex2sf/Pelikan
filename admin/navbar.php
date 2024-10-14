@@ -4,7 +4,7 @@
         <a class="navbar-brand fs-5" href="#" style="padding-left: 60px; padding-top: -10px;">
             <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
         </a>
-        
+
         <!-- Nama Aplikasi -->
         <div>Admin</div>
 
@@ -20,7 +20,7 @@
                 <li class="nav-item px-2">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'admin_dashboard.php' ? 'active' : ''; ?>" aria-current="page" href="admin_dashboard.php" style="color: black;">Beranda</a>
                 </li>
-                
+
                 <!-- Menu Daftar Akun -->
                 <li class="nav-item px-2">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'register.php' ? 'active' : ''; ?>" href="register.php" style="color: black;">Daftar Akun</a>
@@ -28,7 +28,7 @@
 
                 <!-- Kuesioner Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle <?php echo basename($_SERVER['PHP_SELF']) == 'add_data.php' || basename($_SERVER['PHP_SELF']) == 'add_pertanyaan.php' || basename($_SERVER['PHP_SELF']) == 'daftar_organisasi.php' || basename($_SERVER['PHP_SELF']) == 'adminrud_kuesioner.php' ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+                    <a class="nav-link dropdown-toggle <?php echo in_array(basename($_SERVER['PHP_SELF']), ['add_data.php', 'add_pertanyaan.php', 'daftar_organisasi.php', 'adminrud_kuesioner.php']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
                         Kuesioner
                     </a>
                     <ul class="dropdown-menu">
@@ -41,7 +41,7 @@
 
                 <!-- Akses Dropdown -->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle <?php echo basename($_SERVER['PHP_SELF']) == 'admin_akses.php' || basename($_SERVER['PHP_SELF']) == 'akses_penilai.php' || basename($_SERVER['PHP_SELF']) == 'akses_waktuorganisasi.php' ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+                    <a class="nav-link dropdown-toggle <?php echo in_array(basename($_SERVER['PHP_SELF']), ['admin_akses.php', 'akses_penilai.php', 'akses_waktuorganisasi.php']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
                         Akses
                     </a>
                     <ul class="dropdown-menu">
@@ -54,6 +54,11 @@
                 <!-- List UNOR -->
                 <li class="nav-item px-2">
                     <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'Daftar.php' ? 'active' : ''; ?>" href="Daftar.php" style="color: black;">List UNOR</a>
+                </li>
+
+                <!-- Alur -->
+                <li class="nav-item px-2">
+                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'alur_admin.php' ? 'active' : ''; ?>" href="alur_admin.php" style="color: black;">Alur</a>
                 </li>
 
                 <!-- Login/Logout Conditional -->

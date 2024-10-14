@@ -27,14 +27,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
                             <a class="nav-link black" href="../index.php">Login</a>
                           </li>';
                 } else {
-                    echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="logout_penilai.php" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
+                    echo '<li class="nav-item">
+                            <a class="nav-link text-danger" id="logout" href="logout_penilai.php" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a>
                           </li>';
                 }
                 ?>

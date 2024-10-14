@@ -2,6 +2,10 @@
 // Database connection (update with your own connection details)
 ob_start();
 session_start();
+if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
+    header("Location: admin_login.php");
+    exit();
+}
 $username="";
 $username1=$_SESSION["role"];
 include '../koneksi.php';
@@ -19,10 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $web = isset($_POST['web']) && !empty($_POST['web']) ? $_POST['web'] : null;
 
     if (!empty($file_path)) {
-        $stmt = $conn->prepare("UPDATE pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ?, file_path = ? WHERE id_pertanyaan = ?");
+        $stmt = $conn->prepare("UPDATE Pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ?, file_path = ? WHERE id_pertanyaan = ?");
         $stmt->bind_param("siiiiissi", $pertanyaan, $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3, $bobot, $web, $file_path, $id);
     } else {
-        $stmt = $conn->prepare("UPDATE pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ? WHERE id_pertanyaan = ?");
+        $stmt = $conn->prepare("UPDATE Pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ? WHERE id_pertanyaan = ?");
         $stmt->bind_param("siiiiiss", $pertanyaan, $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3, $bobot, $web, $id);
     }
 
@@ -69,19 +73,49 @@ $subkategori1_options = $conn->query("SELECT id_subkategori1, subkategori1 FROM 
 $subkategori2_options = $conn->query("SELECT id_subkategori2, subkategori2 FROM SubKategori2");
 $subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM SubKategori3");
 
-$questions = $conn->query("
-    SELECT p.*, k.kategori 
-    FROM Pertanyaan p 
-    LEFT JOIN Kategori k ON p.id_kategori = k.id_kategori
-");
+// Memeriksa apakah pengguna memilih kategori tertentu
+$id_kategori = isset($_GET['id_kategori']) ? $_GET['id_kategori'] : '';
 
-// Fetch all questions
-// $questions = $conn->query("SELECT * FROM Pertanyaan");
+// Query untuk mengambil pertanyaan sesuai kategori yang dipilih
+if ($id_kategori) {
+    // Filter berdasarkan kategori yang dipilih
+    $questions = $conn->query("
+        SELECT p.*, k.kategori 
+        FROM Pertanyaan p 
+        LEFT JOIN Kategori k ON p.id_kategori = k.id_kategori
+        WHERE p.id_kategori = '$id_kategori'
+    ");
+} else {
+    // Jika tidak ada kategori yang dipilih, ambil semua pertanyaan
+    $questions = $conn->query("
+        SELECT p.*, k.kategori 
+        FROM Pertanyaan p 
+        LEFT JOIN Kategori k ON p.id_kategori = k.id_kategori
+    ");
+}
 ?>
 
+<!-- Form Dropdown untuk memilih kategori -->
+<form method="GET" action="">
+    <label for="kategori">Pilih Kategori:</label>
+    <select name="id_kategori" id="kategori" onchange="this.form.submit()">
+        <option value="">Semua Kategori</option>
+        <?php
+        // Fetch all categories
+        $categories = $conn->query("SELECT * FROM Kategori");
+
+        // Loop through categories and create options
+        while ($category = $categories->fetch_assoc()) { ?>
+            <option value="<?php echo $category['id_kategori']; ?>"
+                <?php if (isset($_GET['id_kategori']) && $_GET['id_kategori'] == $category['id_kategori']) echo 'selected'; ?>>
+                <?php echo $category['kategori']; ?>
+            </option>
+        <?php } ?>
+    </select>
+</form>
+
 <?php
-ob_start();
-session_start();
+
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: admin_login.php");
     exit();
@@ -97,13 +131,15 @@ $username1 = 'admin';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Kuesioner</title>
+    <script type="text/javascript" src="../js/bootstrap.js"></script>
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     <link href="../css/pelikan.css" type="text/css" rel="stylesheet">
     <style>
          body {
-            background-image: url('../img/Kantor KKP.jpg'); /* Ganti dengan path gambar kamu */
+           
             background-size: cover; /* Gambar akan menutupi seluruh background */
             background-position: center; /* Posisi gambar di tengah */
             background-repeat: no-repeat; /* Tidak mengulang gambar */
@@ -126,14 +162,27 @@ $username1 = 'admin';
             letter-spacing: 2px; /* Jarak antar huruf */
             text-shadow: 2px 2px 4px rgb(69, 53, 193); /* Efek bayangan teks sesuai permintaan */
         }
+          /* CSS untuk mengubah warna tulisan saat link aktif */
+    .nav-link.active {
+        color: white !important; /* Mengubah warna tulisan menjadi putih */
+        background-color: #4535C1; /* Mengatur latar belakang jika aktif (ganti dengan warna yang diinginkan) */
+    }
+    
+    /* CSS untuk mengatur warna default untuk link */
+    .nav-link {
+        color: black; /* Warna default untuk semua link */
+    }
+    
+    /* CSS untuk logout */
+    #logout {
+        color: red; /* Warna merah untuk link logout */
+    }
     </style>
 </head>
 <body>
 <?php
     include('navbar.php');  // Include navbar.php
 ?>
-<!-- Halaman konten lainnya di sini -->
-
 
     <div class="container mt-5" class="d-flex justify-content-start align-items-center" class="d-inline-flex">
     <div class="container">
@@ -144,6 +193,24 @@ $username1 = 'admin';
                 <h1 class="text-center">Edit Kuesioner</h1>
             </div>
         </div>
+        <form method="GET" action="">
+    <label for="kategori">Pilih Kategori:</label>
+    <select name="id_kategori" id="kategori" onchange="this.form.submit()">
+        <option value="">Semua Kategori</option>
+        <?php
+        // Ambil semua kategori dari database
+        $categories = $conn->query("SELECT * FROM Kategori");
+
+        // Loop kategori untuk isi dropdown
+        while ($category = $categories->fetch_assoc()) { ?>
+            <option value="<?php echo $category['id_kategori']; ?>"
+                <?php if (isset($_GET['id_kategori']) && $_GET['id_kategori'] == $category['id_kategori']) echo 'selected'; ?>>
+                <?php echo $category['kategori']; ?>
+            </option>
+        <?php } ?>
+    </select>
+</form>
+
         <!-- Table to display all questions -->
         <h4>Semua Kuesioner</h4>
         <table class="table table-striped">
@@ -276,11 +343,37 @@ $username1 = 'admin';
         </form>
         <?php } ?>
 
-        
-
     </div>
 
-    
+    <!-- Modal Konfirmasi Logout -->
+ <div class="modal fade" id="modalLogout" tabindex="-1" aria-labelledby="modalLogoutLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLogoutLabel">Konfirmasi Logout</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin logout?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Modal -->
+   <!-- SweetAlert2 -->
+     <!-- SweetAlert2 -->
+
+      <!-- Script untuk menangani modal dan submit form -->
+      <script type="text/javascript">
+            document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
+                window.location.href = "logout.php"; // Redirect to the logout page
+            });
+        </script>
 </body>
 </html>
 

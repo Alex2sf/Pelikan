@@ -7,12 +7,8 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'penilai') {
     exit();
 }
 
-$conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
+include '../koneksi.php';
 
-// Cek koneksi database
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
 
 $id_akun = $_SESSION['id_akun'];
 

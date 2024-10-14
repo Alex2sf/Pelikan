@@ -54,17 +54,22 @@
             Back
         </button>
     </a>
-
+    <?php
+if (isset($_GET['id'])) {
+    $id_organisasi = (int)$_GET['id'];
+    echo "<p>ID Organisasi: " . $id_organisasi . "</p>"; // Tampilkan ID
+} else {
+    die("ID organisasi tidak ditemukan.");
+}
+?>
     <!-- Tombol Unduh CSV di sebelah kanan -->
-    <a href="download_csv.php" style="text-decoration: none;">
-        <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; display: flex; align-items: center;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white" width="20px" height="20px" style="margin-right: 10px;">
-                <path d="M0 0h24v24H0z" fill="none"/>
-                <path d="M5 20h14v-2H5v2zm7-18l-5.5 6h4v6h3v-6h4L12 2z"/>
-            </svg>
-            Unduh CSV
-        </button>
-    </a>
+    <a href="download_csv.php?id=<?php echo $id_organisasi; ?>">
+    <button style="padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        Unduh CSV
+    </button>
+</a>
+
+
 </div>
 
 <?php

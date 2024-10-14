@@ -3,6 +3,10 @@
 // Database connection
 include '../koneksi.php';
 
+// Initialize modal variables
+$modal_message = '';
+$modal_type = '';
+
 
 // Check if the organization ID is present
 if (isset($_GET['id_organisasi'])) {
@@ -39,14 +43,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $sql = "UPDATE akun_login 
             SET password = ? 
             WHERE id_akun = (SELECT id_akun FROM organisasi WHERE id_organisasi = ?)";
-    
+
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("si", $hashed_password, $id_organisasi);
 
     if ($stmt->execute()) {
-        echo "Password updated successfully!";
+        // Set success modal message and type
+        $modal_message = "Password updated successfully!";
+        $modal_type = "success";
     } else {
-        echo "Error updating password: " . $conn->error;
+        // Set error modal message and type
+        $modal_message = "Error updating password: " . $conn->error;
+        $modal_type = "error";
     }
 }
 
@@ -55,16 +63,24 @@ $conn->close();
 
 <!DOCTYPE html>
 <html>
+<head>
+    <title>Change Password</title>
     <style>
+
         /* General Styles */
-body {
+        body {
     font-family: Arial, sans-serif;
-    margin: 0;
+    background-image: url(../img/KKP.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-attachment: fixed;
+    margin: 200px;
     padding: 0;
     background-color: #f7f7f7;
     color: #333;
-    display: flex;
-    justify-content: center;
+    display: center;
+    justify-conten: center;
     align-items: center;
     height: 100vh;
 }
@@ -110,6 +126,7 @@ input[type="password"] {
     border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+
 }
 
 /* Focused input style */
@@ -155,14 +172,10 @@ button:active {
         font-size: 1.6rem; /* Smaller title on mobile */
     }
 }
-
     </style>
-<head>
-    <title>Change Password</title>
 </head>
 <body>
-
-<h2>Change Password for <?php echo $username; ?></h2>
+<h2 style='color : white'>Change Password</h2>
 
 <form action="change_password_form.php" method="POST">
     <input type="hidden" name="id_organisasi" value="<?php echo $id_organisasi; ?>">
@@ -170,28 +183,30 @@ button:active {
     <input type="password" name="new_password" required>
     <br><br>
     <button type="submit">Update Password</button>
+<!-- Button to go back to the dashboard -->
+<a href="admin_dashboard.php" style="text-decoration: none;">
+    <button type="button" style="padding: 10px 20px; color: white; background-color: #4535C1; border: none; border-radius: 5px; margin-top: 20px;">
+        Back to Dashboard
+    </button>
+</a>
 </form>
-    <!-- Modal -->
-   <!-- SweetAlert2 -->
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        <?php if (!empty($modal_message)) { ?>
-            Swal.fire({
-                title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                text: '<?php echo $modal_message; ?>',
-                icon: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
-                confirmButtonText: 'OK'
-            });
 
-            <?php } ?>
 
-// Show/hide form sections based on role selection
-document.querySelector('select[name="role"]').addEventListener('change', function() {
-    var role = this.value;
-    document.getElementById('penilai-details').style.display = role === 'penilai' ? 'block' : 'none';
-    document.getElementById('organisasi-details').style.display = role === 'user' ? 'block' : 'none';
-});
-    </script>
+
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    <?php if (!empty($modal_message)) { ?>
+        Swal.fire({
+            title: '<?php echo $modal_type == "success" ? "Success" : "Error"; ?>',
+            text: '<?php echo $modal_message; ?>',
+            icon: '<?php echo $modal_type; ?>',
+            confirmButtonText: 'OK'
+        });
+    <?php } ?>
+</script>
 
 </body>
 </html>

@@ -22,19 +22,13 @@
                     <a class="nav-link <?php if(basename($_SERVER['PHP_SELF']) == 'alur.php'){echo 'active';} ?>" href="alur.php">Alur</a>
                 </li>
                 <?php
-                if ($username==$username1){
+                if ($username == $username1) {
                     echo '<li class="nav-item">
-                    <a class="nav-link black" href="../login_new.php">Login</a>
+                        <a class="nav-link black" href="../index.php">Login</a>
                     </li>';
                 } else {
-                    echo '<li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        Profile
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                        <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                    </ul>
+                    echo '<li class="nav-item">
+                        <a class="nav-link text-danger" href="#" id="logout" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a>
                     </li>';
                 }
                 ?>
