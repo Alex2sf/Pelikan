@@ -94,7 +94,10 @@ if (isset($_GET['id_organisasi'])) {
     $stmtTotalNilai->close();
     $stmtOrganisasi->close();
 } else {
-    echo "ID Organisasi tidak ditemukan!";
+    echo "<script>
+        alert('ID Organisasi tidak ditemukan!');
+        window.location.href='index.php';
+    </script>"; 
 }
 ?>
 

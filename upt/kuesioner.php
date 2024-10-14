@@ -263,7 +263,8 @@ if ($result) {
     
 
             echo "</tbody></table><br>";
-            echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";            echo "</form>";
+            echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";           
+             echo "</form>";
         } else {
             echo "0 hasil ditemukan";
         }

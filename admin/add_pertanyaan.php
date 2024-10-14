@@ -3,13 +3,8 @@ ob_start();
 session_start();
 $username="";
 $username1=$_SESSION["role"];
-$servername = "localhost";
-$username = "root";
-$password = "";
-$database = "sigh";
+include '../koneksi.php';
 
-// Database connection
-$conn = new mysqli('localhost', 'root', '', 'sigh');
 
         // Fetch data based on AJAX requests
         if (isset($_GET['action'])) {
@@ -60,7 +55,10 @@ $conn = new mysqli('localhost', 'root', '', 'sigh');
       $sql = "INSERT INTO pertanyaan (pertanyaan, id_kategori, id_subkategori1, id_subkategori2, id_subkategori3,  bobot, web) 
               VALUES ('$pertanyaan', $kategori, $subkategori1, $subkategori2, $subkategori3, '$bobot', '$web')";
       $conn->query($sql);
-      echo "Question added successfully!";
+      echo "<script>
+        alert('Question added successfully!');
+        window.location.href='index.php';
+    </script>";
   }
 ?>
 
@@ -229,69 +227,11 @@ $conn = new mysqli('localhost', 'root', '', 'sigh');
     </style>    
 </head>
 <body>
-<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-            <div class="container-fluid fs-5">
-                <a class="navbar-brand fs-5" href="#" style="padding-left:60px; padding-top:-10px">
-                    <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-                </a>
-                <div>Admin</div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
-                    <ul class="nav nav-tabs ms-auto">
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" aria-current="page" href="admin_dashboard.php">Beranda</a>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="register.php">Daftar Akun</a>
-                        </li>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Kuesioner
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
-                                <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
-                            </ul>
-                        </li>
-                         <!-- Dropdown Akses -->
-                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Akses
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
-                                <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
-    
-                            </ul>
-                        </li>
-                        <li class="nav-item px-2">
-                            <a class="nav-link black" href="Daftar.php">List UNOR</a>
-                        </li>
-                        <?php
-                        if ($username==$username1){
-                            echo '<li class="nav-item">
-                            <a class="nav-link black" href="login.php">Login</a>
-                            </li>';
-                        }else{
-                            echo '<li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                Profile
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="profile.php">My Profile</a></li>
-                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
-                            </ul>
-                            </li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </div>
-        </nav>  
+<?php
+    include('navbar.php');  // Include navbar.php
+?>
+<!-- Halaman konten lainnya di sini -->
+
 <form method="post" name="formPertanyaan">
 <div class="form-container">
 <h3>Tambah Pertanyaan</h3>  

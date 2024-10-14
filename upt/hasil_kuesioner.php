@@ -196,11 +196,15 @@ if ($result->num_rows > 0) {
                     <td>{$row['link']}</td>
                     <td>";
                     
-            if (!empty($row['dokumen'])) {
-                echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a>";
-            } else {
-                echo "Tidak ada dokumen";
-            }
+                    if (!empty($row['dokumen'])) {
+                        // Tampilkan link untuk review
+                        echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a> | ";
+                        
+                        // Tampilkan link untuk download
+                        echo "<a href='../upt/{$row['dokumen']}' download>Download Dokumen</a>";
+                    } else {
+                        echo "Tidak ada dokumen";
+                    }
 
             echo "</td><td>{$row['nilai']}</td>
                     <td>{$row['catatan']}</td>
@@ -210,9 +214,14 @@ if ($result->num_rows > 0) {
 
         echo "</tbody></table>"; // Close the last table
     } else {
-        echo "Belum ada hasil kuesioner.";
-    }
+        echo "<script>
+        alert('Belum ada hasil kuesioner.');
+        window.location.href='index.php';
+    </script>";    }
 } else {
-    echo "Organisasi tidak ditemukan.";
+    echo "<script>
+    alert('Organisasi tidak ditemukan.');
+    window.location.href='index.php';
+</script>"; 
 }
 ?>

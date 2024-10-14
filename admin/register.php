@@ -1,6 +1,16 @@
 <?php
 include '../koneksi.php';
 
+session_start();
+if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
+    header("Location: admin_login.php");
+    exit();
+}
+
+$username="";
+$username1=$_SESSION["role"];
+
+
 $modal_message = '';
 $modal_type = '';
 
@@ -172,9 +182,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .btn-close {
             filter: invert(1);
         }
+
+      
+                /* Gaya untuk input link */
+            input[type="text"] {
+                padding: 5px;
+                width: 150px;
+                border: 2px solid #007BFF;
+                border-radius: 50px;
+                transition: 0.3s ease;
+                text-align: center;
+            }
+
+            input[type="text"]:focus, input[type="text"]:valid {
+                box-shadow: 0 0 1px rgba(0, 91, 234, 0.2);
+            }
+            table th, table td {
+                padding: 10px;
+                text-align: center; /* Menyelaraskan konten secara horizontal ke tengah */
+                vertical-align: middle; /* Menyelaraskan konten secara vertikal ke tengah */
+                border-bottom: 1px solid #ddd;
+            }
+
+            table td input[type="radio"],
+            table td input[type="text"],
+            table td input[type="file"] {
+                margin: 0 auto; /* Membuat elemen berada di tengah */
+                display: block; /* Memastikan elemen berbentuk blok untuk posisi */
+            }
+            .upload-box {
+                font-size: 5 px;
+                background: white;
+                border-radius: 50px;
+                box-shadow: 0px 0px 5px black;
+                width: 350px;
+                outline:none;
+            }
+            ::-webkit-file-upload-button{
+                color: white;
+                background: #206a5d;
+                padding:5px;
+                border:none;
+                border-radius:20px;
+                box-shadow: 1px 0 1px 1px #6b4559;
+                outline: none;
+            }
+            ::-webkit-file-upload-button:hover{
+                background: #438a5e;
+                cursor: pointer;
+            }
     </style>
 </head>
 <body>
+
+<?php
+    include('navbar.php');  // Include navbar.php
+?>
     <div class="container">
         <div class="pt-4 text-center">
             <img src="../img/Logo KKP Sekunder B Putih.png" style="width: 250px; height: auto;" alt="Logo KKP">

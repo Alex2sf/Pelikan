@@ -16,11 +16,7 @@ $modal_type = "";
 $id_organisasi = isset($_GET['id_organisasi']) ? $_GET['id_organisasi'] : '';
 $timezone = isset($_GET['timezone']) ? $_GET['timezone'] : ''; 
 
-// Koneksi ke database
-$conn = new mysqli('localhost', 'root', '', 'sigh');
-if ($conn->connect_error) {
-    die("Koneksi gagal: " . $conn->connect_error);
-}
+include '../koneksi.php';
 
 function convertToTimezoneUnix($inputDate, $inputTime) {
     // // Array untuk timezone Indonesia

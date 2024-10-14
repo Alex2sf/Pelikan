@@ -1,5 +1,4 @@
 <?php
-// change_password_form.php
 
 // Database connection
 include '../koneksi.php';

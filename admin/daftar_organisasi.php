@@ -4,17 +4,8 @@ session_start();
 // Koneksi ke database
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
 $username1 = 'admin';
-$host = 'localhost'; // ganti dengan host database Anda
-$user = 'root'; // ganti dengan username database Anda
-$password = ''; // ganti dengan password database Anda
-$database = 'sigh'; // ganti dengan nama database Anda
+include '../koneksi.php';
 
-$conn = new mysqli($host, $user, $password, $database);
-
-// Cek koneksi
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
 
 // Query untuk mendapatkan daftar organisasi
 $sql = "SELECT DISTINCT o.* 
@@ -122,79 +113,9 @@ $result = $conn->query($sql);
     </style>
 </head>
 <body>
-    <!--Navigasi Bar-->
-    <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
-    <div class="container-fluid fs-5">
-        <!-- Logo -->
-        <a class="navbar-brand fs-5" href="#" style="padding-left: 60px; padding-top: -10px;">
-            <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
-        </a>
-        
-        <!-- Nama Aplikasi -->
-        <div>Admin</div>
-
-        <!-- Button Toggle untuk Mobile View -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <!-- Menu Navbar -->
-        <div class="collapse navbar-collapse" id="navbarNav" style="padding-right: 60px;">
-            <ul class="nav nav-tabs ms-auto">
-                <!-- Menu Beranda -->
-                <li class="nav-item px-2">
-                    <a class="nav-link" aria-current="page" href="admin_dashboard.php" style="color: black;">Beranda</a>
-                </li>
-                
-                <!-- Menu Daftar Akun -->
-                <li class="nav-item px-2">
-                    <a class="nav-link" href="register.php" style="color: black;">Daftar Akun</a>
-                </li>
-
-                <!-- Kuesioner Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle active" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
-                        Kuesioner
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="add_data.php">Tambah Kategori Kuesioner</a></li>
-                        <li><a class="dropdown-item" href="add_pertanyaan.php">Tambah Pertanyaan Kuesioner</a></li>
-                        <li><a class="dropdown-item" href="daftar_organisasi.php">Hasil Kuesioner</a></li>
-                        <li><a class="dropdown-item" href="adminrud_kuesioner.php">Edit Kuesioner</a></li>
-                    </ul>
-                </li>
-
-                <!-- Akses Dropdown -->
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
-                        Akses
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="admin_akses.php">Akses UNOR</a></li>
-                        <li><a class="dropdown-item" href="akses_penilai.php">Akses Penilai</a></li>
-                        <li><a class="dropdown-item" href="akses_waktuorganisasi.php">Akses Waktu Organisasi</a></li>
-                    </ul>
-                </li>
-
-                <!-- List UNOR -->
-                <li class="nav-item px-2">
-                    <a class="nav-link" href="Daftar.php" style="color: black;">List UNOR</a>
-                </li>
-
-                <!-- Login/Logout Conditional -->
-                <li class="nav-item px-2">
-                    <?php
-                    if ($username == $username1) {
-                        echo '<a class="nav-link" href="login.php" style="color: black;">Login</a>';
-                    } else {
-                        echo '<a class="nav-link" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout" style="color: red;">Logout</a>';
-                    }
-                    ?>
-                </li>
-            </ul>
-        </div>
-    </div>
-</nav>
+<?php
+    include('navbar.php');  // Include navbar.php
+?>
 
 <br><br>
 <h3>Hasil Kuesioner</h3>  
