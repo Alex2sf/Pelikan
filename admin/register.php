@@ -244,8 +244,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
         <h2>Register User atau Penilai</h2>
         <form method="post" action="">
+
             <label>Username:</label>
-            <input type="text" name="username" required>
+            <input style = ' width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-sizing: border-box;
+            color: #333;
+            font-size: 16px;'type="text" name="username" required>
+
+       
 
             <label>Password:</label>
             <input type="password" name="password" required>
