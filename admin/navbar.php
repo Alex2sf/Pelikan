@@ -50,11 +50,19 @@
                         <li><a class="dropdown-item" href="akses_waktuorganisasi.php">Akses Waktu Organisasi</a></li>
                     </ul>
                 </li>
-
-                <!-- List UNOR -->
-                <li class="nav-item px-2">
-                    <a class="nav-link <?php echo basename($_SERVER['PHP_SELF']) == 'Daftar.php' ? 'active' : ''; ?>" href="Daftar.php" style="color: black;">List UNOR</a>
+                
+                <!-- Akses Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle <?php echo in_array(basename($_SERVER['PHP_SELF']), ['admin_akses.php', 'akses_penilai.php', 'akses_waktuorganisasi.php']) ? 'active' : ''; ?>" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false" style="color: black;">
+                        List
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="Daftar.php">List UNOR</a></li>
+                        <li><a class="dropdown-item" href="list_penilai.php">List Penilai</a></li>
+                    </ul>
                 </li>
+
+            
 
                 <!-- Alur -->
                 <li class="nav-item px-2">

@@ -23,10 +23,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
     $web = isset($_POST['web']) && !empty($_POST['web']) ? $_POST['web'] : null;
 
     if (!empty($file_path)) {
-        $stmt = $conn->prepare("UPDATE Pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ?, file_path = ? WHERE id_pertanyaan = ?");
+        $stmt = $conn->prepare("UPDATE pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ?, file_path = ? WHERE id_pertanyaan = ?");
         $stmt->bind_param("siiiiissi", $pertanyaan, $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3, $bobot, $web, $file_path, $id);
     } else {
-        $stmt = $conn->prepare("UPDATE Pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ? WHERE id_pertanyaan = ?");
+        $stmt = $conn->prepare("UPDATE pertanyaan SET pertanyaan = ?, id_kategori = ?, id_subkategori1 = ?, id_subkategori2 = ?, id_subkategori3 = ?, bobot = ?, web = ? WHERE id_pertanyaan = ?");
         $stmt->bind_param("siiiiiss", $pertanyaan, $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3, $bobot, $web, $id);
     }
 
@@ -52,7 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
     $stmt->close();
 
     // Hapus data dari tabel 'Pertanyaan'
-    $stmt = $conn->prepare("DELETE FROM Pertanyaan WHERE id_pertanyaan = ?");
+    $stmt = $conn->prepare("DELETE FROM pertanyaan WHERE id_pertanyaan = ?");
     $stmt->bind_param("i", $delete_id);
 
     if ($stmt->execute()) {
@@ -68,10 +68,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
 }
 
 // Fetch options for dropdowns for editing
-$kategori_options = $conn->query("SELECT id_kategori, kategori FROM Kategori");
-$subkategori1_options = $conn->query("SELECT id_subkategori1, subkategori1 FROM SubKategori1");
-$subkategori2_options = $conn->query("SELECT id_subkategori2, subkategori2 FROM SubKategori2");
-$subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM SubKategori3");
+$kategori_options = $conn->query("SELECT id_kategori, kategori FROM kategori");
+$subkategori1_options = $conn->query("SELECT id_subkategori1, subkategori1 FROM subkategori1");
+$subkategori2_options = $conn->query("SELECT id_subkategori2, subkategori2 FROM subkategori2");
+$subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM subkategori3");
 
 // Memeriksa apakah pengguna memilih kategori tertentu
 $id_kategori = isset($_GET['id_kategori']) ? $_GET['id_kategori'] : '';
@@ -81,16 +81,16 @@ if ($id_kategori) {
     // Filter berdasarkan kategori yang dipilih
     $questions = $conn->query("
         SELECT p.*, k.kategori 
-        FROM Pertanyaan p 
-        LEFT JOIN Kategori k ON p.id_kategori = k.id_kategori
+        FROM pertanyaan p 
+        LEFT JOIN kategori k ON p.id_kategori = k.id_kategori
         WHERE p.id_kategori = '$id_kategori'
     ");
 } else {
     // Jika tidak ada kategori yang dipilih, ambil semua pertanyaan
     $questions = $conn->query("
         SELECT p.*, k.kategori 
-        FROM Pertanyaan p 
-        LEFT JOIN Kategori k ON p.id_kategori = k.id_kategori
+        FROM pertanyaan p 
+        LEFT JOIN kategori k ON p.id_kategori = k.id_kategori
     ");
 }
 ?>
@@ -102,7 +102,7 @@ if ($id_kategori) {
         <option value="">Semua Kategori</option>
         <?php
         // Fetch all categories
-        $categories = $conn->query("SELECT * FROM Kategori");
+        $categories = $conn->query("SELECT * FROM kategori");
 
         // Loop through categories and create options
         while ($category = $categories->fetch_assoc()) { ?>
@@ -199,7 +199,7 @@ $username1 = 'admin';
         <option value="">Semua Kategori</option>
         <?php
         // Ambil semua kategori dari database
-        $categories = $conn->query("SELECT * FROM Kategori");
+        $categories = $conn->query("SELECT * FROM kategori");
 
         // Loop kategori untuk isi dropdown
         while ($category = $categories->fetch_assoc()) { ?>
@@ -262,7 +262,7 @@ $username1 = 'admin';
         // Fetch the question data to edit if an ID is provided
         if (isset($_GET['id'])) {
             $id = $_GET['id'];
-            $stmt = $conn->prepare("SELECT * FROM Pertanyaan WHERE id_pertanyaan = ?");
+            $stmt = $conn->prepare("SELECT * FROM pertanyaan WHERE id_pertanyaan = ?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
             $result = $stmt->get_result();

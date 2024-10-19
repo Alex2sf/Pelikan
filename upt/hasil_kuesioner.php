@@ -198,10 +198,10 @@ if ($result->num_rows > 0) {
                     
                     if (!empty($row['dokumen'])) {
                         // Tampilkan link untuk review
-                        echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a> | ";
+                        echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review</a> | ";
                         
                         // Tampilkan link untuk download
-                        echo "<a href='../upt/{$row['dokumen']}' download>Download Dokumen</a>";
+                        echo "<a href='../upt/{$row['dokumen']}' download>Download</a>";
                     } else {
                         echo "Tidak ada dokumen";
                     }

@@ -20,6 +20,10 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <li class="nav-item px-2">
                     <a class="nav-link <?php echo ($current_page == 'list_organisasi.php' ? 'active' : 'black'); ?>" href="list_organisasi.php">Daftar Organisasi</a>
                 </li>
+                <li class="nav-item px-2">
+                    <a class="nav-link <?php echo ($current_page == 'alur_penilai.php' ? 'active' : 'black'); ?>" href="alur_penilai.php">Alur Penilai</a>
+                </li>
+                
                 
                 <?php
                 if ($username == $username1) {

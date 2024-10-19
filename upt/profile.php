@@ -16,7 +16,7 @@ include '../koneksi.php';
 
 
 // Ambil data organisasi berdasarkan id_akun
-$sql = "SELECT * FROM Organisasi WHERE id_akun = $id_akun";
+$sql = "SELECT * FROM organisasi WHERE id_akun = $id_akun";
 $result = $conn->query($sql);
 $organisasi = $result->fetch_assoc();
 ?>
@@ -136,12 +136,6 @@ $organisasi = $result->fetch_assoc();
                             </div>
                         </div>
 
-                        <div class="form-group row d-flex align-items-center justify-content-center pb-3">
-                            <label for="inputtimezone" class="col-sm-4 col-form-label text-right">timezone</label>
-                            <div class="col-sm-8">
-                                : <?php echo $organisasi['timezone'] ?? '';?>
-                            </div>
-                        </div>
                     </form>                    
                 </div>                  
                 <div class="col">

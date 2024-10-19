@@ -222,30 +222,36 @@ $id_organisasi = $_SESSION['id_organisasi'];
 
                 // Pastikan id_organisasi ada
                 if ($id_organisasi) {
-                    // Query untuk mendapatkan data organisasi dan penilai
                     $query = $conn->prepare("
-                    SELECT o.unit_eselon1, o.nama_organisasi, o.batas_waktu,o.id_penilai, p.nama_penilai 
+                    SELECT o.unit_eselon1, o.nama_organisasi, o.batas_waktu, o.id_penilai, p.nama_penilai, 
+                           o.nilai_kategori1, o.nilai_kategori2, o.nilai_kategori3, o.nilai_kategori4, 
+                           o.nilai_kategori5, o.nilai_kategori6
                     FROM organisasi o
-                    LEFT JOIN Profile_Penilai p ON o.id_penilai = p.id_penilai
+                    LEFT JOIN profile_penilai p ON o.id_penilai = p.id_penilai
                     WHERE o.id_organisasi = ? 
                     AND o.unit_eselon1 IS NOT NULL AND o.unit_eselon1 <> ''
                     AND o.nama_organisasi IS NOT NULL AND o.nama_organisasi <> ''
                     AND o.batas_waktu IS NOT NULL AND o.batas_waktu <> ''
                     AND o.id_penilai IS NOT NULL AND o.batas_waktu <> ''
-
                     AND p.nama_penilai IS NOT NULL AND p.nama_penilai <> ''
-                ");
-                    $query->bind_param('i', $id_organisasi);  // Bind parameter
+                    ");
+                    
+                    $query->bind_param('i', $id_organisasi);  // Bind the parameter
                     $query->execute();
                     $result = $query->get_result();
-
-                    // Jika data ditemukan
+                
+                    // If data is found
                     if ($result->num_rows > 0) {
                         $row = $result->fetch_assoc();
                         $unit_eselon1 = htmlspecialchars($row['unit_eselon1']);
                         $nama_organisasi = htmlspecialchars($row['nama_organisasi']);
                         $batas_waktu = $row['batas_waktu'] ? formatUnixToReadableDate(htmlspecialchars($row['batas_waktu'])) : '';
                         $nama_penilai = htmlspecialchars($row['nama_penilai']);
+                        $nilai_kategori1 = htmlspecialchars($row['nilai_kategori1']);
+                        $nilai_kategori3 = htmlspecialchars($row['nilai_kategori3']);
+                        $nilai_kategori4 = htmlspecialchars($row['nilai_kategori4']);
+                        $nilai_kategori5 = htmlspecialchars($row['nilai_kategori5']);
+                        $nilai_kategori6 = htmlspecialchars($row['nilai_kategori6']);
 
                        // Dapatkan waktu sekarang dalam format UNIX timestamp
 $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
@@ -280,6 +286,41 @@ $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
                         <label for="nama_penilai">Nama Penilai:</label>
                         <span class="form-control-plaintext" id="nama_penilai"><?php echo $nama_penilai; ?></span>
                     </div>
+<!-- Display category scores -->
+<div class="form-group">
+    <label for="nilai_kategori1" >Nilai Mengumumkan IP:</label>
+    <span class="form-control-plaintext" id="nilai_kategori1">
+        <?php echo (!empty($nilai_kategori1)) ? $nilai_kategori1 : 'Belum ada nilai'; ?>
+    </span>
+</div>
+
+<div class="form-group">
+    <label for="nilai_kategori3">Nilai Menyediakan Dokumen Informasi:</label>
+    <span class="form-control-plaintext" id="nilai_kategori3">
+        <?php echo (!empty($nilai_kategori3)) ? $nilai_kategori3 : 'Belum ada nilai'; ?>
+    </span>
+</div>
+
+<div class="form-group">
+    <label for="nilai_kategori4">Nilai Sarana Prasarana:</label>
+    <span class="form-control-plaintext" id="nilai_kategori4">
+        <?php echo (!empty($nilai_kategori4)) ? $nilai_kategori4 : 'Belum ada nilai'; ?>
+    </span>
+</div>
+
+<div class="form-group">
+    <label for="nilai_kategori5">Nilai Kelembagaan PPID:</label>
+    <span class="form-control-plaintext" id="nilai_kategori5">
+        <?php echo (!empty($nilai_kategori5)) ? $nilai_kategori5 : 'Belum ada nilai'; ?>
+    </span>
+</div>
+
+<div class="form-group">
+    <label for="nilai_kategori6">Nilai Digitalisasi:</label>
+    <span class="form-control-plaintext" id="nilai_kategori6">
+        <?php echo (!empty($nilai_kategori6)) ? $nilai_kategori6 : 'Belum ada nilai'; ?>
+    </span>
+</div>
 
                     <div class="form-group">
                         <label for="batas_waktu">Batas Waktu Pengerjaan:</label>
@@ -295,21 +336,21 @@ $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
                        <form action="kuesioner.php" method="POST">
     <input type="hidden" name="id_organisasi" value="<?php echo $id_organisasi; ?>">
     
-    <?php if($is_batas_waktu_terlampaui): ?>
-        <?= "Batas waktu sudah habis" ?>
-        <div class="form-submit">
-    <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary">
-        Lihat Hasil Kuesioner
-    </a>
-</div>
-    <?php else: ?>
-        <div class="form-submit">
-            <button type="submit" class="btn btn-primary">Submit Kuesioner</button>
-            <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary">
-        Lihat Hasil Kuesioner
-    </a>
-        </div>
-    <?php endif ?>
+  <?php if($is_batas_waktu_terlampaui): ?>
+    <?= "Batas waktu sudah habis" ?>
+    <div class="form-submit">
+        <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary" style="margin-top: 10px;">
+            Lihat Hasil Kuesioner
+        </a>
+    </div>
+<?php else: ?>
+    <div class="form-submit">
+        <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Mulai Mengerjakan</button>
+        <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary" style="margin-left: 10px;">
+            Lihat Hasil Kuesioner
+        </a>
+    </div>
+<?php endif; ?>
 </form>
                 <?php
                     } else {

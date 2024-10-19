@@ -39,12 +39,11 @@ $sql = "SELECT k.id_kuesioner, p.pertanyaan, p.bobot, k.jawaban, k.link, k.dokum
         LEFT JOIN subkategori3 sub3 ON p.id_subkategori3 = sub3.id_subkategori3
         WHERE k.id_organisasi = ? AND k.id_penilai = ?
         ORDER BY 
-               cat.id_kategori ASC,    -- Urutkan berdasarkan ID kategori dari kecil ke besar
-               sub1.subkategori1 ASC,  
-               sub2.subkategori2 ASC,  
-               sub3.subkategori3 ASC,  
-               k.verifikasi DESC,      
-               k.id_kuesioner ASC";    
+              cat.id_kategori ASC,    -- Urutkan berdasarkan ID kategori dari kecil ke besar
+               sub1.id_subkategori1 ASC,  
+               sub2.id_subkategori2 ASC,  
+               sub3.id_subkategori3 ASC,  
+               k.id_kuesioner ASC";     
  
 
 $stmt = $conn->prepare($sql);
@@ -67,27 +66,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $verifikasi = isset($_POST['verifikasi'][$id_kuesioner]) ? 1 : 0;
 
         $stmt = $conn->prepare("UPDATE kuesioner SET nilai = ?, catatan = ?, verifikasi = ? WHERE id_kuesioner = ? AND id_penilai = ?");
-        $stmt->bind_param('ssiii', $nilai, $catatan, $verifikasi, $id_kuesioner, $id_penilai);
+        $stmt->bind_param('dsiii', $nilai, $catatan, $verifikasi, $id_kuesioner, $id_penilai);
         if (!$stmt->execute()) {
             echo "Error: " . $stmt->error;
         }
     }
     // Refresh the page to avoid form resubmission
-    header("Location: " . $_SERVER['PHP_SELF'] . "?id_organisasi=" . $id_organisasi);
+    header("Location: penilai_beranda.php");
     exit();
 }
-// Query untuk menghitung total nilai per kategori
-$totalNilaiQuery = "SELECT k.id_kategori, SUM(k.nilai) AS total_nilai, cat.kategori
-                     FROM kuesioner k
-                     JOIN kategori cat ON k.id_kategori = cat.id_kategori
-                     WHERE k.id_penilai = ? AND k.verifikasi = 1
-                     GROUP BY k.id_kategori";
+// Query untuk menghitung total nilai per kategori berdasarkan organisasi
+$totalNilaiQuery = "SELECT k.id_kategori, k.id_organisasi, SUM(k.nilai) AS total_nilai, cat.kategori
+                    FROM kuesioner k
+                    JOIN kategori cat ON k.id_kategori = cat.id_kategori
+                    WHERE k.id_penilai = ? AND k.verifikasi = 1
+                    GROUP BY k.id_kategori, k.id_organisasi";
 
 // Mempersiapkan statement
 $stmtTotalNilai = $conn->prepare($totalNilaiQuery);
 $stmtTotalNilai->bind_param('i', $id_penilai);
 $stmtTotalNilai->execute();
 $resultTotalNilai = $stmtTotalNilai->get_result();
+
 ?>
 
 <!DOCTYPE html>
@@ -268,7 +268,6 @@ textarea {
             </div>
         </nav>
 
-<br>
 
     <h2>Dashboard Penilai</h2>
 
@@ -276,6 +275,9 @@ textarea {
     <form action="penilai_dashboard.php?id_organisasi=<?php echo $id_organisasi; ?>" method="POST">
         <?php
         // Loop melalui hasil query
+          $sqlJawaban = "SELECT * FROM kuesioner WHERE id_organisasi = $id_organisasi";
+                $resultJawaban = $conn->query($sqlJawaban);
+
         while ($row = $result->fetch_assoc()) {
             $dokumen = $row['dokumen']; // Nama file dokumen dari database
 
@@ -321,7 +323,7 @@ textarea {
                 $last_subkategori3 = ''; // Reset SubKategori3
             }
 
-            // Jika SubKategori3 berubah, tutup tabel sebelumnya
+            
             if ($last_subkategori3 != $row['subkategori3']) {
                 if ($last_subkategori3 != '') {
                     echo "</tbody></table><br>"; // Tutup tabel sebelumnya jika ada
@@ -342,56 +344,57 @@ textarea {
                         <tbody>";
                 $last_subkategori3 = $row['subkategori3'];
             }
-
-// Tampilkan baris data pertanyaan
-echo "<tr>
-        <td>{$row['pertanyaan']}</td>
-        <td>{$row['bobot']}</td>
-        <td>{$row['jawaban']}</td>
-        <td><a href='{$row['link']}' target='_blank'>{$row['link']}</a></td>
-        <td>";
-if (!empty($row['dokumen'])) {
-    echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review Dokumen</a>";
-} else {
-    echo "Tidak ada dokumen";
-}
-echo "</td>";
-
-// Cek jika jawaban bukan "Tidak", tampilkan dropdown nilai
-if (strtolower($row['jawaban']) != 'tidak') {
-    echo "<td>
-            <select name='nilai[{$row['id_kuesioner']}]'>
-                <option value=''>Pilih Nilai</option>"; // Opsi kosong/default
-
-    // Menampilkan hanya kolom yang tidak NULL dan memiliki nilai
-    if (!is_null($row['A'])) {
-        echo "<option value='{$row['A']}'>A: {$row['A']}</option>";
-    }
-    if (!is_null($row['B'])) {
-        echo "<option value='{$row['B']}'>B: {$row['B']}</option>";
-    }
-    if (!is_null($row['C'])) {
-        echo "<option value='{$row['C']}'>C: {$row['C']}</option>";
-    }
-    if (!is_null($row['D'])) {
-        echo "<option value='{$row['D']}'>D: {$row['D']}</option>";
-    }
-    if (!is_null($row['E'])) {
-        echo "<option value='{$row['E']}'>E: {$row['E']}</option>";
-    }
-    echo "</select>
-        </td>";
-} else {
-    // Jika jawaban "Tidak", beri pesan bahwa nilai tidak bisa dipilih
-    echo "<td>Tidak dapat mengisi Nilai</td>";
-}
-
-// Kolom catatan dan verifikasi
-echo "<td><textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'></textarea></td>";
-echo "<td><label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1'> Verifikasi</label></td>";
-echo "<td><input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'></td>";
-echo "</tr>";
-
+        
+            // Tampilkan baris data pertanyaan
+            echo "<tr>
+                    <td>{$row['pertanyaan']}</td>
+                    <td>{$row['bobot']}</td>
+                    <td>{$row['jawaban']}</td>
+                    <td><a href='{$row['link']}' target='_blank'>{$row['link']}</a></td>
+                    <td>";
+            if (!empty($row['dokumen'])) {
+                echo "<a href='../upt/{$row['dokumen']}' target='_blank'>Review<br></a> ";
+                                            // Tampilkan link untuk download
+                            echo "<a href='../upt/{$row['dokumen']}' download>Download</a>";
+                        
+            } else {
+                echo "Tidak ada dokumen";
+            }
+            echo "</td>";
+        
+            // Cek jika jawaban bukan "Tidak", tampilkan dropdown nilai
+            if (strtolower($row['jawaban']) != 'tidak') {
+                echo "<td>
+                        <select name='nilai[{$row['id_kuesioner']}]'>
+                            <option value=''>Pilih Nilai</option>"; // Opsi kosong/default
+        
+                // Menampilkan hanya kolom yang tidak NULL dan memiliki nilai
+                if (!is_null($row['A'])) {
+                    echo "<option value='{$row['A']}' " . ($row['nilai'] == $row['A'] ? 'selected' : '') . ">A: {$row['A']}</option>";
+                }
+                if (!is_null($row['B'])) {
+                    echo "<option value='{$row['B']}' " . ($row['nilai'] == $row['B'] ? 'selected' : '') . ">B: {$row['B']}</option>";
+                }
+                if (!is_null($row['C'])) {
+                    echo "<option value='{$row['C']}' " . ($row['nilai'] == $row['C'] ? 'selected' : '') . ">C: {$row['C']}</option>";
+                }
+                if (!is_null($row['D'])) {
+                    echo "<option value='{$row['D']}' " . ($row['nilai'] == $row['D'] ? 'selected' : '') . ">D: {$row['D']}</option>";
+                }
+                if (!is_null($row['E'])) {
+                    echo "<option value='{$row['E']}' " . ($row['nilai'] == $row['E'] ? 'selected' : '') . ">E: {$row['E']}</option>";
+                }
+                echo "</select>
+                    </td>";
+            } else {
+                echo "<td>Tidak dapat mengisi Nilai</td>";
+            }
+        
+            // Kolom catatan dan verifikasi
+            echo "<td><textarea name='catatan[{$row['id_kuesioner']}]' placeholder='Catatan'>{$row['catatan']}</textarea></td>";
+            echo "<td><label><input type='checkbox' name='verifikasi[{$row['id_kuesioner']}]' value='1' " . ($row['verifikasi'] ? 'checked' : '') . "> Verifikasi</label></td>";
+            echo "<td><input type='hidden' name='update[{$row['id_kuesioner']}]' value='1'></td>";
+            echo "</tr>";
         }
 
         // Tutup tabel terakhir
@@ -400,34 +403,35 @@ echo "</tr>";
         }
         while ($rowTotal = $resultTotalNilai->fetch_assoc()) {
             $kategoriId = $rowTotal['id_kategori'];
+            $id_organisasi = $rowTotal['id_organisasi'];
             $totalNilai = $rowTotal['total_nilai'];
             $kategoriNama = $rowTotal['kategori'];
             
             // Menampilkan hasil total nilai per kategori
-        
-            // Query untuk mengupdate nilai kategori di tabel organisasi
+            
+            // Query untuk mengupdate nilai kategori di tabel organisasi berdasarkan id_organisasi
             $updateNilaiQuery = "";
         
             // Menentukan kolom nilai berdasarkan id_kategori
             switch ($kategoriId) {
                 case 1:
-                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori1 = ? WHERE id_penilai = ?";
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori1 = ? WHERE id_organisasi = ?";
                     break;
                 case 2:
-                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori2 = ? WHERE id_penilai = ?";
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori2 = ? WHERE id_organisasi = ?";
                     break;
                 case 3:
-                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori3 = ? WHERE id_penilai = ?";
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori3 = ? WHERE id_organisasi = ?";
                     break;
                 case 4:
-                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori4 = ? WHERE id_penilai = ?";
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori4 = ? WHERE id_organisasi = ?";
                     break;
                 case 5:
-                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori5 = ? WHERE id_penilai = ?";
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori5 = ? WHERE id_organisasi = ?";
                     break;
-                    case 6:
-                        $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori6 = ? WHERE id_penilai = ?";
-                        break;
+                case 6:
+                    $updateNilaiQuery = "UPDATE organisasi SET nilai_kategori6 = ? WHERE id_organisasi = ?";
+                    break;
                 default:
                     // Jika tidak ada kategori yang sesuai
                     echo "Kategori tidak ditemukan!";
@@ -439,8 +443,8 @@ echo "</tr>";
                 // Mempersiapkan statement untuk update
                 $stmtUpdateNilai = $conn->prepare($updateNilaiQuery);
                 
-                // Bind parameter, nilai dan id_penilai
-                $stmtUpdateNilai->bind_param('di', $totalNilai, $id_penilai);
+                // Bind parameter, nilai dan id_organisasi
+                $stmtUpdateNilai->bind_param('di', $totalNilai, $id_organisasi);
                 
                 // Menjalankan query update
                 if ($stmtUpdateNilai->execute()) {
@@ -449,12 +453,8 @@ echo "</tr>";
                 
                 // Menutup statement
                 $stmtUpdateNilai->close();
-            }
-        }
-        
-        // Menutup statement total nilai
-        $stmtTotalNilai->close();
 
+            }}
         
         ?>
 
@@ -465,41 +465,14 @@ echo "</tr>";
 
 <script>
     document.getElementById('submitBtn').addEventListener('click', function(event) {
-        let isValid = true;
-        let errorMessage = '';
+     
 
         // Ambil semua input nilai, catatan, dan verifikasi
         const nilaiInputs = document.querySelectorAll("input[name^='nilai']");
         const catatanInputs = document.querySelectorAll("textarea[name^='catatan']");
         const verifikasiInputs = document.querySelectorAll("input[type='checkbox'][name^='verifikasi']");
 
-        // Validasi setiap field
-        nilaiInputs.forEach((input, index) => {
-            if (!input.value.trim()) {
-                isValid = false;
-                errorMessage = 'Semua field Nilai harus diisi!';
-            }
-        });
-
-        catatanInputs.forEach((textarea) => {
-            if (!textarea.value.trim()) {
-                isValid = false;
-                errorMessage = 'Semua field Catatan harus diisi!';
-            }
-        });
-
-        verifikasiInputs.forEach((checkbox) => {
-            if (!checkbox.checked) {
-                isValid = false;
-                errorMessage = 'Semua Verifikasi harus dicentang!';
-            }
-        });
-
-        // Jika tidak valid, cegah form submit
-        if (!isValid) {
-            event.preventDefault();
-            alert(errorMessage);
-        }
+      
     });
 </script>
 

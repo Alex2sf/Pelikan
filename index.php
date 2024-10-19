@@ -40,7 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         // Simpan pesan error ke session
         $_SESSION['error_message'] = "Username atau password salah";
-        header("Location: login_new.php"); // Redirect untuk mencegah form resubmission
+        header("Location: index.php"); // Redirect untuk mencegah form resubmission
         exit();
     }
 }

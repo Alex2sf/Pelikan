@@ -52,7 +52,7 @@ $username1=$_SESSION["role"];
                     
                 </div>
                 <div class="co-8l">
-                    <img src="alur1.jpeg" class="img-fluid" alt="alur">
+                    <img src="alurnibosh.png" class="img-fluid" alt="alur">
                 </div>
                 <div class="col">
                     

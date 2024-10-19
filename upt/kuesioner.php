@@ -1,4 +1,6 @@
 <?php
+error_reporting(0); // Menonaktifkan semua jenis error dan warning
+
 ob_start();
 session_start();
 // Set session timeout to 2 hours (7200 seconds)
@@ -51,6 +53,16 @@ if ($result) {
 } else {
     $total_cfo = 0; // Atau bisa menampilkan pesan error
 }
+$id_organisasi = $_SESSION['id_organisasi'];
+// Cek apakah pengguna sudah mengisi kuesioner
+$sql_check = "SELECT * FROM kuesioner WHERE id_organisasi = ?";
+$stmt_check = $conn->prepare($sql_check);
+$stmt_check->bind_param("i", $id_organisasi);
+$stmt_check->execute();
+$result_check = $stmt_check->get_result();
+
+$alreadyFilled = $result_check->num_rows > 0; // TRUE jika sudah pernah mengisi, FALSE sebaliknya
+
 
 ?>
 <html lang="en">
@@ -137,21 +149,20 @@ if ($result) {
         
         <!-- Kuesioner -->
         <?php
-        $conn = new mysqli('localhost', 'root', '', 'sigh'); // Ganti dengan kredensial database Anda
 
-        if ($conn->connect_error) {
-            die("Koneksi gagal: " . $conn->connect_error);
-        }
         // Fetch data for display
         $sql = "SELECT P.id_pertanyaan, P.pertanyaan, K.kategori, SK1.subkategori1, SK2.subkategori2, SK3.subkategori3, P.bobot, P.web 
-                FROM Pertanyaan P 
-                JOIN Kategori K ON P.id_kategori = K.id_kategori
-                JOIN SubKategori1 SK1 ON P.id_subkategori1 = SK1.id_subkategori1
-                JOIN SubKategori2 SK2 ON P.id_subkategori2 = SK2.id_subkategori2
-                JOIN SubKategori3 SK3 ON P.id_subkategori3 = SK3.id_subkategori3
+                FROM pertanyaan P 
+                JOIN kategori K ON P.id_kategori = K.id_kategori
+                JOIN subkategori1 SK1 ON P.id_subkategori1 = SK1.id_subkategori1
+                JOIN subkategori2 SK2 ON P.id_subkategori2 = SK2.id_subkategori2
+                JOIN subkategori3 SK3 ON P.id_subkategori3 = SK3.id_subkategori3
                 ORDER BY SK1.id_subkategori1, SK2.id_subkategori2, SK3.id_subkategori3";
 
         $result = $conn->query($sql);
+        
+          $sqlJawaban = "SELECT * FROM kuesioner WHERE id_organisasi = $id_organisasi";
+                $resultJawaban = $conn->query($sqlJawaban);
 
         if ($result->num_rows > 0) {
             echo "<form action='submit_kuesioner.php' method='post' enctype='multipart/form-data'>"; // Start the form
@@ -160,10 +171,15 @@ if ($result) {
             $last_subkategori1 = '';
             $last_subkategori2 = '';
             $last_subkategori3 = '';
-
+            echo "<h3 style='color: red; text-align: center;'> Note : Link dan Dokumen wajib diisi jika memilih jawaban Ya.</h3>";
+            $jawabanArray = array();
+            while ($jawabanRow = $resultJawaban->fetch_assoc()) {
+                $jawabanArray[$jawabanRow['id_pertanyaan']] = $jawabanRow;
+            }
+            
             // Output data every row
             while ($row = $result->fetch_assoc()) {
-                // If SubKategori1 changes, create a new header
+                // If subkategori1 changes, create a new header
                 if ($last_kategori != $row['kategori']) {
                     if ($last_kategori != '') {
                         echo "</tbody></table><br>"; // Close previous table if any
@@ -213,6 +229,7 @@ if ($result) {
                     $last_subkategori3 = ''; // Reset SubKategori3
                 }
 
+
                 // If SubKategori3 changes, create a new header
                 if ($last_subkategori3 != $row['subkategori3']) {
                     if ($last_subkategori3 != '') {
@@ -233,38 +250,47 @@ if ($result) {
                     $last_subkategori3 = $row['subkategori3'];
                 }
 
-                // Display questions related to SubKategori3
+                $jawaban = isset($jawabanArray[$row['id_pertanyaan']]) ? $jawabanArray[$row['id_pertanyaan']] : null;
+
                 echo "<tr>
-                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
-                        <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
-                        <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['web']}</td>";
-        // Tampilkan elemen hanya jika bobot tidak null
-        if (!is_null($row['bobot'])) {
-            echo "<td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                    <label style='margin-right: 15px;'>
-                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya' onchange='toggleInputs(this)'> Ya
-                    </label>
-                    <label>
-                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak' onchange='toggleInputs(this)'> Tidak
-                    </label>
-                </td>
-                <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                    <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' class='link-input'>
-                </td>
-                <td style='padding: 8px; border-bottom: 1px solid #ddd;'>
-                    <input type='file' class='upload-box file-input' name='dokumen[{$row['id_pertanyaan']}]' accept='application/pdf' >
-                </td>";
+            <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['pertanyaan']}</td>
+            <td style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>{$row['bobot']}</td>
+            <td style='padding: 8px; text-align: justify; border-bottom: 1px solid #ddd;'>{$row['web']}</td>";
+
+    if (!is_null($row['bobot'])) {
+        echo "<td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                <label style='margin-right: 15px;'>
+                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Ya' " . ($jawaban && $jawaban['jawaban'] === 'Ya' ? 'checked="true"' : '') . "> Ya
+                </label>
+                <label>
+                    <input type='radio' name='jawaban[{$row['id_pertanyaan']}]' value='Tidak' " . ($jawaban && $jawaban['jawaban'] === 'Tidak' ? 'checked="true"' : '') . "> Tidak
+                </label>
+              </td>";
+
+        echo "<td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                <input type='text' name='link[{$row['id_pertanyaan']}]' placeholder='Masukkan link' value='" . ($jawaban ? $jawaban['link'] : '') . "'>
+              </td>";
+
+        echo "<td style='padding: 8px; border-bottom: 1px solid #ddd;'>
+                <input type='file' class='upload-box file-input' name='dokumen[{$row['id_pertanyaan']}]' accept='application/pdf'>";
+        
+        if ($jawaban && !empty($jawaban['dokumen'])) {
+            echo "<br><a href='../upt/{$jawaban['dokumen']}' target='_blank'>Lihat Dokumen</a>";
+        }
+
+
         } else {
             echo "<td colspan='3' style='padding: 8px; text-align: center; border-bottom: 1px solid #ddd;'>Tidak ada isian diperlukan</td>";
         }
-        echo "</tr>";
     }
     
     
 
-            echo "</tbody></table><br>";
-            echo "<input type='submit' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";           
-             echo "</form>";
+    echo "</tbody></table><br>";
+    echo "<input type='submit' name='submit_type' value='Kirim' style='padding: 10px 20px; background-color: #007BFF; color: white; border: none; border-radius: 5px; width: 100%;' onclick='return validateForm();'>";
+                echo "<input type='submit' name='submit_type' value='Simpan' style='padding: 10px 20px; background-color: #28A745; color: white; border: none; border-radius: 5px; width: 100%; margin-top: 10px;' onclick='return validateForm();'>";        
+                
+                echo "</form>";
         } else {
             echo "0 hasil ditemukan";
         }

@@ -34,7 +34,7 @@ include '../koneksi.php';
                 exit();
             } elseif ($action === 'fetch_subkategori3' && isset($_GET['id_subkategori2'])) {
                 $id_subkategori2 = $_GET['id_subkategori2'];
-                $sql = "SELECT id_subkategori3, subkategori3 FROM subktegori3 WHERE id_subkategori2 = $id_subkategori2";
+                $sql = "SELECT id_subkategori3, subkategori3 FROM subkategori3 WHERE id_subkategori2 = $id_subkategori2";
                 $result = $conn->query($sql);
                 while ($row = $result->fetch_assoc()) {
                     echo "<option value='" . $row['id_subkategori3'] . "'>" . $row['subkategori3'] . "</option>";
@@ -43,22 +43,25 @@ include '../koneksi.php';
             }
         }
 
-  // Handle form submission
-  if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-      $kategori = $_POST['kategori'];
-      $subkategori1 = $_POST['subkategori1'];
-      $subkategori2 = $_POST['subkategori2'];
-      $subkategori3 = $_POST['subkategori3'];
-      $pertanyaan = $_POST['pertanyaan'];
-      $bobot = $_POST['bobot'];
-      $web = $_POST['web'];
-      $sql = "INSERT INTO pertanyaan (pertanyaan, id_kategori, id_subkategori1, id_subkategori2, id_subkategori3,  bobot, web) 
-              VALUES ('$pertanyaan', $kategori, $subkategori1, $subkategori2, $subkategori3, '$bobot', '$web')";
+    // Handle form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $kategori = $_POST['kategori'];
+        $subkategori1 = $_POST['subkategori1'];
+        $subkategori2 = $_POST['subkategori2'];
+        $subkategori3 = $_POST['subkategori3'];
+        $pertanyaan = $_POST['pertanyaan'];
+        $bobot = $_POST['bobot'];
+        $web = $_POST['web'];
+    // Ambil nilai A, B, C, D, dan E dari form
+        $A = $_POST['A'] ? $_POST['A'] : 'NULL'; // Jika kosong, jadikan NULL
+        $B = $_POST['B'] ? $_POST['B'] : 'NULL';
+        $C = $_POST['C'] ? $_POST['C'] : 'NULL';
+        $D = $_POST['D'] ? $_POST['D'] : 'NULL';
+        $E = $_POST['E'] ? $_POST['E'] : 'NULL';
+        $sql = "INSERT INTO pertanyaan (pertanyaan, id_kategori, id_subkategori1, id_subkategori2, id_subkategori3, bobot, web, A, B, C, D, E) 
+            VALUES ('$pertanyaan', $kategori, $subkategori1, $subkategori2, $subkategori3, '$bobot', '$web', $A, $B, $C, $D, $E)";
       $conn->query($sql);
-      echo "<script>
-        alert('Question added successfully!');
-        window.location.href='index.php';
-    </script>";
+      echo "Question added successfully!";
   }
 ?>
 
@@ -230,8 +233,6 @@ include '../koneksi.php';
 <?php
     include('navbar.php');  // Include navbar.php
 ?>
-<!-- Halaman konten lainnya di sini -->
-
 <form method="post" name="formPertanyaan">
 <div class="form-container">
 <h3>Tambah Pertanyaan</h3>  
@@ -267,10 +268,24 @@ include '../koneksi.php';
 
 
             <label for="bobot">Bobot:</label>
-            <input type="number" id="bobot" name="bobot" step="0.01" required>
+            <input type="number" id="bobot" name="bobot" step="0.01">
             <label for="web">Website (optional):</label>
             <input type="text" id="web" name="web">
+    <!-- Input untuk A, B, C, D, dan E -->
+            <label for="A">Nilai A:</label>
+            <input type="number" step="0.01" id="A" name="A">
 
+            <label for="B">Nilai B:</label>
+            <input type="number" step="0.01" id="B" name="B">
+
+            <label for="C">Nilai C:</label>
+            <input type="number" step="0.01" id="C" name="C">
+
+            <label for="D">Nilai D:</label>
+            <input type="number" step="0.01" id="D" name="D">
+
+            <label for="E">Nilai E:</label>
+            <input type="number" step="0.01" id="E" name="E">
     <!-- Submit Button -->
     <button type="submit">Add Question</button>
   </form>
@@ -289,9 +304,9 @@ include '../koneksi.php';
       // Update SubKategori1 based on Kategori selection
       $('#kategori').change(function() {
         var kategoriId = $(this).val();
-        $('#subkategori1').html('<option value="">Select SubKategori 1</option>');
-        $('#subkategori2').html('<option value="">Select SubKategori 2</option>');
-        $('#subkategori3').html('<option value="">Select SubKategori 3</option>');
+        $('#subkategori1').html('<option value="">Select subkategori 1</option>');
+        $('#subkategori2').html('<option value="">Select subkategori 2</option>');
+        $('#subkategori3').html('<option value="">Select subkategori 3</option>');
         if (kategoriId) {
           $.ajax({
             url: '?action=fetch_subkategori1&id_kategori=' + kategoriId,
@@ -306,8 +321,8 @@ include '../koneksi.php';
       // Update SubKategori2 based on SubKategori1 selection
       $('#subkategori1').change(function() {
         var subkategori1Id = $(this).val();
-        $('#subkategori2').html('<option value="">Select SubKategori 2</option>');
-        $('#subkategori3').html('<option value="">Select SubKategori 3</option>');
+        $('#subkategori2').html('<option value="">Select subkategori 2</option>');
+        $('#subkategori3').html('<option value="">Select subkategori 3</option>');
         if (subkategori1Id) {
           $.ajax({
             url: '?action=fetch_subkategori2&id_subkategori1=' + subkategori1Id,
@@ -322,7 +337,7 @@ include '../koneksi.php';
       // Update SubKategori3 based on SubKategori2 selection
       $('#subkategori2').change(function() {
         var subkategori2Id = $(this).val();
-        $('#subkategori3').html('<option value="">Select SubKategori 3</option>');
+        $('#subkategori3').html('<option value="">Select subkategori 3</option>');
         if (subkategori2Id) {
           $.ajax({
             url: '?action=fetch_subkategori3&id_subkategori2=' + subkategori2Id,

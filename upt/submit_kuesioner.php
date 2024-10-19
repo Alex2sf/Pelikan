@@ -10,6 +10,7 @@ include '../koneksi.php';
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Custom Popup</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- CSS untuk styling popup -->
     <style>
@@ -62,11 +63,9 @@ include '../koneksi.php';
 </head>
 <body>
 <?php
+session_start(); // Always make sure session is started
 $id_akun = $_SESSION['id_akun'];
-$organisasi_query = $conn->prepare("SELECT * FROM organisasi WHERE id_akun = ?");
-$organisasi_query->bind_param('i', $id_akun);
-$organisasi_query->execute();
-$organisasi_result = $organisasi_query->get_result();
+
 // Cek apakah pengguna sudah login dan memiliki peran 'user'
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'user') {
     // Jika akses ditolak, tampilkan pop-up
@@ -84,16 +83,24 @@ if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'user') {
         });
 
         function redirectToLogin() {
-            window.location.href = '../index.php'; // Atur ke halaman login atau halaman lain
+            window.location.href = '../index.php'; // Redirect ke halaman login atau halaman lain
         }
     </script>";
     exit();
 }
+
+// Prepare query to check organisasi
+$organisasi_query = $conn->prepare("SELECT * FROM organisasi WHERE id_akun = ?");
+$organisasi_query->bind_param('i', $id_akun);
+$organisasi_query->execute();
+$organisasi_result = $organisasi_query->get_result();
+
 if ($organisasi_result->num_rows > 0) {
     $organisasi = $organisasi_result->fetch_assoc();
     $id_organisasi = $organisasi['id_organisasi'];
     $can_fill_out = $organisasi['can_fill_out'];
 
+    // Check if the user can still fill out the questionnaire
     if (!$can_fill_out) {
         echo "<div id='popup' class='popup'>
             <div class='popup-content'>
@@ -108,94 +115,117 @@ if ($organisasi_result->num_rows > 0) {
                 window.location.href = 'index.php'; // Redirect setelah menutup popup
             }
         </script>";
-        exit(); // Menghentikan eksekusi PHP
+        exit();
     }
 
-    
-    foreach ($_POST['jawaban'] as $id_pertanyaan => $jawaban) {
-        // Prepare the SQL statements
-        $pertanyaan_query = $conn->prepare("SELECT * FROM pertanyaan WHERE id_pertanyaan = ?");
-        $pertanyaan_query->bind_param('i', $id_pertanyaan);
-        $pertanyaan_query->execute();
-        $pertanyaan_result = $pertanyaan_query->get_result();
+    // Handle form submission
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        foreach ($_POST['jawaban'] as $id_pertanyaan => $jawaban) {
+            // Prepare pertanyaan query
+            $pertanyaan_query = $conn->prepare("SELECT * FROM pertanyaan WHERE id_pertanyaan = ?");
+            $pertanyaan_query->bind_param('i', $id_pertanyaan);
+            $pertanyaan_query->execute();
+            $pertanyaan_result = $pertanyaan_query->get_result();
 
-        if ($pertanyaan_result->num_rows > 0) {
-            $pertanyaan_row = $pertanyaan_result->fetch_assoc();
-            $pertanyaan_text = $pertanyaan_row['pertanyaan'];
-            $id_kategori = $pertanyaan_row['id_kategori'];
-            $id_subkategori1 = $pertanyaan_row['id_subkategori1'];
-            $id_subkategori2 = $pertanyaan_row['id_subkategori2'];
-            $id_subkategori3 = $pertanyaan_row['id_subkategori3'];
-        } else {
-            continue;
-        }
-
-        $link = isset($_POST['link'][$id_pertanyaan]) ? $_POST['link'][$id_pertanyaan] : NULL;
-        $dokumen = isset($_FILES['dokumen']['name'][$id_pertanyaan]) ? $_FILES['dokumen']['name'][$id_pertanyaan] : NULL;
-
-        // Handle file upload
-        if ($dokumen) {
-            $upload_dir = 'uploads/';
-            $upload_file = $upload_dir . basename($_FILES['dokumen']['name'][$id_pertanyaan]);
-            if (move_uploaded_file($_FILES['dokumen']['tmp_name'][$id_pertanyaan], $upload_file)) {
-                $dokumen = $upload_file; // Save the path to the database
+            if ($pertanyaan_result->num_rows > 0) {
+                $pertanyaan_row = $pertanyaan_result->fetch_assoc();
+                $pertanyaan_text = $pertanyaan_row['pertanyaan'];
+                $id_kategori = $pertanyaan_row['id_kategori'];
+                $id_subkategori1 = $pertanyaan_row['id_subkategori1'];
+                $id_subkategori2 = $pertanyaan_row['id_subkategori2'];
+                $id_subkategori3 = $pertanyaan_row['id_subkategori3'];
             } else {
-                $dokumen = NULL; // If file upload fails
+                continue; // Skip if no question is found
             }
+
+            // Handle optional link and file upload
+            $link = isset($_POST['link'][$id_pertanyaan]) ? $_POST['link'][$id_pertanyaan] : NULL;
+            $dokumen = isset($_FILES['dokumen']['name'][$id_pertanyaan]) ? $_FILES['dokumen']['name'][$id_pertanyaan] : NULL;
+
+            // Handle file upload
+            if ($dokumen) {
+                $upload_dir = 'uploads/';
+                $upload_file = $upload_dir . basename($_FILES['dokumen']['name'][$id_pertanyaan]);
+                if (move_uploaded_file($_FILES['dokumen']['tmp_name'][$id_pertanyaan], $upload_file)) {
+                    $dokumen = $upload_file; // Save the path to the database
+                } else {
+                    $dokumen = NULL; // If file upload fails
+                }
+            }
+
+            // Check if the record already exists
+            $check_query = $conn->prepare("SELECT * FROM kuesioner WHERE id_pertanyaan = ? AND id_organisasi = ?");
+            $check_query->bind_param('ii', $id_pertanyaan, $id_organisasi);
+            $check_query->execute();
+            $check_result = $check_query->get_result();
+
+            if ($check_result->num_rows > 0) {
+                // Update if record exists
+                $existing_row = $check_result->fetch_assoc();
+                $existing_dokumen = $existing_row['dokumen'];
+
+                if ($dokumen == NULL) {
+                    $dokumen = $existing_dokumen; // Use existing document if no new file uploaded
+                }
+
+                $stmt = $conn->prepare("UPDATE kuesioner SET jawaban = ?, link = ?, dokumen = ? WHERE id_pertanyaan = ? AND id_organisasi = ?");
+                $stmt->bind_param('sssii', $jawaban, $link, $dokumen, $id_pertanyaan, $id_organisasi);
+            } else {
+                // Insert new record
+                $stmt = $conn->prepare("INSERT INTO kuesioner (id_pertanyaan, pertanyaan, jawaban, link, dokumen, id_organisasi, unit_eselon1, nama_organisasi, nip_responden, id_penilai, id_kategori, id_subkategori1, id_subkategori2, id_subkategori3)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param('issssisssiiiii', $id_pertanyaan, $pertanyaan_text, $jawaban, $link, $dokumen, $id_organisasi, 
+                    $organisasi['unit_eselon1'], $organisasi['nama_organisasi'], $organisasi['nip_responden'], 
+                    $organisasi['id_penilai'], $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3);
+            }
+            $stmt->execute();
         }
 
-        // Check if the record already exists (UPDATE instead of INSERT if it exists)
-        $check_query = $conn->prepare("SELECT * FROM kuesioner WHERE id_pertanyaan = ? AND id_organisasi = ?");
-        $check_query->bind_param('ii', $id_pertanyaan, $id_organisasi);
-        $check_query->execute();
-        $check_result = $check_query->get_result();
+        // Check for submission type
+        if ($_POST['submit_type'] == 'Kirim') {
+            // Update can_fill_out status to FALSE
+            $update_query = $conn->prepare("UPDATE organisasi SET can_fill_out = FALSE WHERE id_organisasi = ?");
+            $update_query->bind_param('i', $id_organisasi);
+            $update_query->execute();
 
-        if ($check_result->num_rows > 0) {
-            // Update existing record if it exists
-            $stmt = $conn->prepare("UPDATE kuesioner SET jawaban = ?, link = ?, dokumen = ? WHERE id_pertanyaan = ? AND id_organisasi = ?");
-            $stmt->bind_param('sssii', $jawaban, $link, $dokumen, $id_pertanyaan, $id_organisasi);
-        } else {
-            // Insert new record
-            $stmt = $conn->prepare("INSERT INTO kuesioner (
-                id_pertanyaan, pertanyaan, jawaban, link, dokumen, id_organisasi, unit_eselon1, nama_organisasi, nip_responden, id_penilai, id_kategori, id_subkategori1, id_subkategori2, id_subkategori3
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param('issssisssiiiii', 
-                $id_pertanyaan, $pertanyaan_text, $jawaban, $link, $dokumen, $id_organisasi, 
-                $organisasi['unit_eselon1'], $organisasi['nama_organisasi'], $organisasi['nip_responden'], 
-                $organisasi['id_penilai'], $id_kategori, $id_subkategori1, $id_subkategori2, $id_subkategori3
-            );
+            echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: 'Anda telah mengisi. Kuesioner sudah terkirim.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.php'; // Redirect to main page
+                    }
+                });
+            </script>";
+        } elseif ($_POST['submit_type'] == 'Simpan') {
+            echo "<script>
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Disimpan',
+                    text: 'Kuesioner telah disimpan. Anda dapat melanjutkan pengisian nanti.',
+                    confirmButtonText: 'OK'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = 'index.php'; // Redirect to main page
+                    }
+                });
+            </script>";
         }
-        $stmt->execute();
-    }
 
-    // Tetap revoke access setelah kuesioner dikirim
-    $update_query = $conn->prepare("UPDATE organisasi SET can_fill_out = FALSE WHERE id_organisasi = ?");
-    $update_query->bind_param('i', $id_organisasi);
-    $update_query->execute();
-
-    // Tutup statement dan koneksi
-    $stmt->close();
-    $conn->close();
-    
-    echo "<div id='popup' class='popup'>
-    <div class='popup-content'>
-        <h2>Success</h2>
-        <p>Data telah berhasil dikirim. Anda tidak dapat mengisi ulang kuesioner.</p>
-        <button onclick='closePopup()'>OK</button>
-    </div>
-</div>
-<script>
-    function closePopup() {
-        document.getElementById('popup').style.display = 'none';
-        window.location.href = 'index.php'; // Redirect setelah menutup popup
+        // Close statement and connection
+        $stmt->close();
+        $conn->close();
     }
-</script>";
 } else {
+    // If no organisasi data found
     echo "
     <div id='popup' class='popup'>
         <div class='popup-content'>
             <h2>Error</h2>
-            <p>Organisasi data tidak ditemukan.</p>
+            <p>Data organisasi tidak ditemukan.</p>
             <button onclick='closePopup()'>OK</button>
         </div>
     </div>
@@ -205,8 +235,10 @@ if ($organisasi_result->num_rows > 0) {
             window.location.href = 'error_page.php'; // Redirect setelah menutup popup
         }
     </script>";
+    exit();
 }
 ?>
+
 </body>
 </html>
 

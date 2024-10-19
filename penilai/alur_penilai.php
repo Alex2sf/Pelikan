@@ -1,9 +1,7 @@
 <?php
 session_start();
-require 'session_timeout.php';
-
 if (!isset($_SESSION['id_akun'])) {
-    header("Location: login_new.php");
+    header("Location: login.php");
     exit();
 }
 $username="";
@@ -27,7 +25,47 @@ $username1=$_SESSION["role"];
         </style>
     </head>
     <body>
-    <?php include 'navbar.php'; ?>
+        <!--Navigasi Bar-->
+        <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" style="border-bottom: 2px solid #4535C1; height: 60px;">
+            <div class="container-fluid fs-5">
+                <a class="navbar-brand fs-5" href="#" style="padding-left:60px;">
+                <img src="../img/pelikanlogo.png" alt="Logo" width="60" class="d-inline-block align-text-top">
+                </a>
+                <div>Pelikan</div>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav" style="padding-right:60px;">
+                    <ul class="nav nav-tabs ms-auto">
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" aria-current="page" href="penilai_beranda.php">Beranda</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link black" href="list_organisasi.php">Daftar Organisasi</a>
+                        </li>
+                        <li class="nav-item px-2">
+                            <a class="nav-link active" href="alur_penilai.php">Alur Penilai</a>
+                        </li>
+                        <?php
+                        if ($username==$username1){
+                            echo '<li class="nav-item">
+                            <a class="nav-link black" href="login.php">Login</a>
+                            </li>';
+                        }else{
+                            echo '<li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle black" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Profile
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" id="logout" href="#" data-bs-toggle="modal" data-bs-target="#modalLogout">Logout</a></li>
+                            </ul>
+                            </li>';
+                        }
+                        ?>
+                    </ul>
+                </div>
+            </div>
+        </nav>
 
         <!--Container Putih Informasi Organisasi-->
         <div class="container-fluid text-center" style="background-color: white; color:black; padding:40px; margin-top:100px;">
@@ -36,7 +74,7 @@ $username1=$_SESSION["role"];
                     
                 </div>
                 <div class="col-8">
-                    <h1>Alur Monitoring dan Evaluasi</h1>
+                    <h1>Alur Monitoring dan Evaluasi Untuk Penilai</h1>
                     <h3>Keterbukaan Informasi Publik</h3>
                 </div>
                 <div class="col">
@@ -52,7 +90,7 @@ $username1=$_SESSION["role"];
                     
                 </div>
                 <div class="co-8l">
-                    <img src="alur1.jpeg" class="img-fluid" alt="alur">
+                    <img src="alurpenilai.png" class="img-fluid" alt="alur">
                 </div>
                 <div class="col">
                     
@@ -202,8 +240,10 @@ $username1=$_SESSION["role"];
         <!-- Script untuk menangani modal dan submit form -->
         <script type="text/javascript">
             document.getElementById("confirmLogoutBtn").addEventListener("click", function() {
-                window.location.href = "logout.php"; // Redirect to the logout page
+                window.location.href = "logout_penilai.php"; // Redirect to the logout page
             });
         </script>
     </body>
 </html>
+
+

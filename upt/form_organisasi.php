@@ -1,25 +1,44 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 require 'session_timeout.php';
-
-
 
 if (!isset($_SESSION['id_akun'])) {
     header("Location: ../index.php");
     exit();
 }
 
-$username="";
-$username1=$_SESSION["role"];
+$username = "";
+$username1 = $_SESSION["role"];
 
 include '../koneksi.php';
 
+// Check if id_akun is set in the session
+if (isset($_SESSION['id_akun'])) {
+    $id_akun = $_SESSION['id_akun'];
 
-// Ambil data organisasi berdasarkan id_akun
-$sql = "SELECT * FROM Organisasi WHERE id_akun = $id_akun";
-$result = $conn->query($sql);
-$organisasi = $result->fetch_assoc();
+    // Prepare the SQL query safely using prepared statements
+    $sql = "SELECT * FROM organisasi WHERE id_akun = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param('i', $id_akun);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    if ($result->num_rows > 0) {
+        $organisasi = $result->fetch_assoc();
+    } else {
+        echo "No records found.";
+    }
+
+    $stmt->close();
+} else {
+    echo "ID Akun not set.";
+}
+
+$conn->close();
 ?>
+
 
 <html lang="en">
     <head>
@@ -142,13 +161,9 @@ $organisasi = $result->fetch_assoc();
                             </div>
                         </div>
                         <div class="form-group row d-flex align-items-center justify-content-center">
-                            <label for="inputtimezone" class="col-sm-4 col-form-label text-right">TimeZone</label>
+                            <label for="inputtimezone" class="col-sm-4 col-form-label text-right"></label>
                             <div class="col-sm-8">
-                            <select name="timezone" class="form-control">
-                                <option>WIB</option>
-                                <option>WIT</option>
-                                <option>WITA</option>
-                            </select> 
+                           
                         </div>
                         </div>
                     

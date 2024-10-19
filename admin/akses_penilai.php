@@ -72,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_access'])) {
     $sql_delete = "DELETE FROM penilai_user_access WHERE id_penilai='$id_penilai' AND id_organisasi='$id_organisasi'";
     if ($conn->query($sql_delete) === TRUE) {
         // Periksa apakah ada akses lain untuk organisasi tersebut
-        $check_other_access_sql = "SELECT * FROM Penilai_User_Access WHERE id_organisasi='$id_organisasi'";
+        $check_other_access_sql = "SELECT * FROM penilai_user_access WHERE id_organisasi='$id_organisasi'";
         $check_other_access_result = $conn->query($check_other_access_sql);
 
         if ($check_other_access_result->num_rows == 0) {
@@ -116,10 +116,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_access'])) {
 }
 
 // Ambil daftar penilai dan organisasi
-$penilai_sql = "SELECT * FROM Profile_Penilai";
+$penilai_sql = "SELECT * FROM profile_penilai";
 $penilai_result = $conn->query($penilai_sql);
 
-$organisasi_sql = "SELECT * FROM Organisasi";
+$organisasi_sql = "SELECT * FROM organisasi";
 $organisasi_result = $conn->query($organisasi_sql);
 ?>
 

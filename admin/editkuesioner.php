@@ -5,7 +5,8 @@ session_start();
 if (!isset($_SESSION['id_akun']) || $_SESSION['role'] != 'admin') {
     header("Location: admin_login.php");
     exit();
-}include '../koneksi.php';
+}
+include '../koneksi.php';
 
 
 // Handle form submissions for deletion
@@ -35,10 +36,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete'])) {
 }
 
 // Fetch options for dropdowns for editing
-$kategori_options = $conn->query("SELECT id_kategori, kategori FROM Kategori");
-$subkategori1_options = $conn->query("SELECT id_subkategori1, subkategori1 FROM SubKategori1");
-$subkategori2_options = $conn->query("SELECT id_subkategori2, subkategori2 FROM SubKategori2");
-$subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM SubKategori3");
+$kategori_options = $conn->query("SELECT id_kategori, kategori FROM kategori");
+$subkategori1_options = $conn->query("SELECT id_subkategori1, subkategori1 FROM subkategori1");
+$subkategori2_options = $conn->query("SELECT id_subkategori2, subkategori2 FROM subkategori2");
+$subkategori3_options = $conn->query("SELECT id_subkategori3, subkategori3 FROM subkategori3");
 
 // Handle form submissions for updates
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
@@ -71,7 +72,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update'])) {
 // Fetch the question data to edit if an ID is provided
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conn->prepare("SELECT * FROM Pertanyaan WHERE id_pertanyaan = ?");
+    $stmt = $conn->prepare("SELECT * FROM pertanyaan WHERE id_pertanyaan = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $result = $stmt->get_result();

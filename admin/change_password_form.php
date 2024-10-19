@@ -175,9 +175,10 @@ button:active {
     </style>
 </head>
 <body>
-<h2 style='color : white'>Change Password</h2>
+
 
 <form action="change_password_form.php" method="POST">
+    <h2>Change Password</h2>
     <input type="hidden" name="id_organisasi" value="<?php echo $id_organisasi; ?>">
     <label for="new_password">New Password:</label>
     <input type="password" name="new_password" required>

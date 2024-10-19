@@ -20,7 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $role = $_POST['role'];
 
     // Cek apakah username sudah ada
-    $check_username = "SELECT * FROM Akun_Login WHERE username = '$username'";
+    $check_username = "SELECT * FROM akun_login WHERE username = '$username'";
     $result_username = $conn->query($check_username);
 
     if ($result_username->num_rows > 0) {

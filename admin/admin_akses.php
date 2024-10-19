@@ -4,8 +4,56 @@ include '../koneksi.php';
 
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
-    die('Access denied. Only admins can access this page.');
+    echo "
+    <div id='popup' class='popup'>
+        <div class='popup-content'>
+            <h2>Access Denied</h2>
+            <p>Only admins can access this page.</p>
+            <button onclick='redirectToLogin()'>OK</button>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('popup').style.display = 'block';
+        });
+
+        function redirectToLogin() {
+            window.location.href = 'admin_login.php'; // Arahkan ke halaman login admin
+        }
+    </script>
+    <style>
+        .popup {
+            display: none; 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .popup-content {
+            margin: 15% auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>";
+    exit(); // Hentikan eksekusi PHP setelah menampilkan pop-up
 }
+
 $username = "";
 $username1 = $_SESSION["role"];
 $modal_message = "";
