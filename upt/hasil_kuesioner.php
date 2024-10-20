@@ -105,15 +105,21 @@ if ($result->num_rows > 0) {
 
     // Query untuk mengambil hasil kuesioner berdasarkan id_organisasi
     $sql = "SELECT k.id_kuesioner, p.pertanyaan, p.bobot, k.jawaban, k.link, k.dokumen, k.nilai, k.catatan, k.verifikasi, o.nama_organisasi,
-               cat.id_kategori, cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3
-            FROM kuesioner k
-            JOIN pertanyaan p ON k.id_pertanyaan = p.id_pertanyaan
-            JOIN organisasi o ON k.id_organisasi = o.id_organisasi
-            LEFT JOIN kategori cat ON p.id_kategori = cat.id_kategori 
-            LEFT JOIN subkategori1 sub1 ON p.id_subkategori1 = sub1.id_subkategori1
-            LEFT JOIN subkategori2 sub2 ON p.id_subkategori2 = sub2.id_subkategori2
-            LEFT JOIN subkategori3 sub3 ON p.id_subkategori3 = sub3.id_subkategori3
-            WHERE k.id_organisasi = '$id_organisasi'";
+    cat.id_kategori, cat.kategori, sub1.subkategori1, sub2.subkategori2, sub3.subkategori3
+FROM kuesioner k
+JOIN pertanyaan p ON k.id_pertanyaan = p.id_pertanyaan
+JOIN organisasi o ON k.id_organisasi = o.id_organisasi
+LEFT JOIN kategori cat ON p.id_kategori = cat.id_kategori 
+LEFT JOIN subkategori1 sub1 ON p.id_subkategori1 = sub1.id_subkategori1
+LEFT JOIN subkategori2 sub2 ON p.id_subkategori2 = sub2.id_subkategori2
+LEFT JOIN subkategori3 sub3 ON p.id_subkategori3 = sub3.id_subkategori3
+WHERE k.id_organisasi = '$id_organisasi'
+      ORDER BY 
+              cat.id_kategori ASC,    -- Urutkan berdasarkan ID kategori dari kecil ke besar
+               sub1.id_subkategori1 ASC,  
+               sub2.id_subkategori2 ASC,  
+               sub3.id_subkategori3 ASC,  
+               k.id_kuesioner ASC";   
 
     $result = $conn->query($sql);
 

@@ -57,6 +57,13 @@ function formatUnixToReadableDate($unixTimestamp) {
     return $dateTime->format('d-m-Y H:i:s'); // Anda bisa mengubah format ini sesuai kebutuhan
 }
 $id_organisasi = $_SESSION['id_organisasi'];
+$sql = "SELECT can_fill_out FROM organisasi WHERE id_organisasi = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $id_organisasi);
+$stmt->execute();
+$stmt->bind_result($can_fill_out);
+$stmt->fetch();
+$stmt->close();
 
 ?>
 <html lang="en">
@@ -345,7 +352,15 @@ $waktu_sekarang = time(); // Waktu sekarang dalam UNIX timestamp
     </div>
 <?php else: ?>
     <div class="form-submit">
-        <button type="submit" class="btn btn-primary" style="margin-right: 10px;">Mulai Mengerjakan</button>
+    <button type="button" class="btn btn-primary" style="margin-right: 10px;" 
+    onclick="<?php if ($can_fill_out == 0): ?>
+        alert('Anda tidak dapat mengisi kuesioner saat ini.');
+        window.location.href = 'index.php';
+    <?php else: ?>
+        this.form.submit();  // Submits the form if allowed
+    <?php endif; ?>">
+    Mulai Mengerjakan
+</button>
         <a href="hasil_kuesioner.php?id_organisasi=<?php echo $id_organisasi; ?>" class="btn btn-primary" style="margin-left: 10px;">
             Lihat Hasil Kuesioner
         </a>
